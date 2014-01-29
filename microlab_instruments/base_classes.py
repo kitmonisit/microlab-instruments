@@ -38,18 +38,18 @@ class GPIBInstrument(Instrument):
 
 
 class TCPIPInstrument(Instrument):
-    def __init__(self, ip_address, port):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((ip_address, port))
+    def __init__(self, socket_pair):
+        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__socket.connect(socket_pair)
 
     def __del__(self):
-        self.socket.close()
+        self.__socket.close()
 
     def write(self, scpi_string):
-        self.socket.send(scpi_string)
+        self.__socket.send(scpi_string)
 
     def read(self):
-        return self.socket.recv(4096)
+        return self.__socket.recv(4096)
 
 
 class SerialInstrument(Instrument):
