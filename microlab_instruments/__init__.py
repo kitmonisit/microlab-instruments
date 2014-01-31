@@ -6,6 +6,7 @@ __email__ = 'kmonisit@gmail.com'
 __version__ = '0.1.0'
 
 import base_classes as bc
+from base_classes import AardvarkInstrument
 
 # GPIB Instruments
 ARCEUS   = {
