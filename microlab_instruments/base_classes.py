@@ -5,6 +5,8 @@ import aardvark_py as aapy
 import gpib
 import serial
 import socket
+from random import randint
+from array import array
 
 class Instrument(object):
     def __init__(self):
@@ -47,9 +49,24 @@ class AardvarkInstrument(object):
         # SPI configuration
         aapy.aa_spi_bitrate(self.__device, 1000)
         aapy.aa_spi_configure(self.__device, aapy.AA_SPI_POL_RISING_FALLING, aapy.AA_SPI_PHASE_SAMPLE_SETUP, aapy.AA_SPI_BITORDER_MSB)
+        self.__spi_test()
+
 
     def __del__(self):
         aapy.aa_close(self.__device)
+
+    def __spi_test(self):
+        TEST_MESSAGE = array('B', [randint(0x00, 0xFF) for n in range(25)])
+        self.spi_write(TEST_MESSAGE)
+        TEST_RESPONSE = self.spi_write(TEST_MESSAGE)
+        aa = map(hex, TEST_MESSAGE)
+        bb = map(hex, TEST_RESPONSE)
+        for match in zip(aa, bb):
+            print match
+        if TEST_MESSAGE == TEST_RESPONSE:
+            print 'SPI communication OK'
+        else:
+            raise Exception, 'SPI communication not working'
 
     def i2c_write(self, address, bytecode):
         """Write `bytecode` to the Aardvark output to be received by I2C
@@ -88,12 +105,12 @@ class AardvarkInstrument(object):
         Returns
         -------
         out : array
-            A `bufsize`-length array of `int`s represented in hex.
+            A `bufsize`-length array of `int`s.
         """
         xin = aapy.array_u08(bufsize)
         status, data_recv, bytes_recv = aapy.aa_i2c_read_ext(self.__device, address, aapy.AA_I2C_NO_FLAGS, xin)
         if status == 0:
-            out = map(hex, xin)
+            out = xin
             return out
         else:
             raise Exception, self.I2C_STATUS_CODES[status]
@@ -114,42 +131,41 @@ class AardvarkInstrument(object):
         Returns
         -------
         out : array
-            Response from slave.  A `bufsize`-length array of `int`s
-            represented in hex.
+            Response from slave.  A `bufsize`-length array of `int`s.
         """
         xout = aapy.array_u08(1)
         xout[0] = bytecode
         xin = aapy.array_u08(bufsize)
         status, bytes_sent, data_recv, bytes_recv = aapy.aa_i2c_write_read(self.__device, address, aapy.AA_I2C_NO_FLAGS, xout, xin)
         if status == 0:
-            out = map(hex, xin)
+            out = xin
             return out
         else:
             raise Exception, self.I2C_STATUS_CODES[status]
 
-    def spi_write(self, bytecode, bufsize):
-        """Write `bytecode` to, and read `bufsize` bytes from, the SPI
+    def spi_write(self, bytecode):
+        """Write `bytecode` to, and read 25 bytes from, the SPI
         channel in one fell swoop!
 
         Parameters
         ----------
-        bytecode : int
-            Raw bytecode to send.  Limited to 8 bits.
-        bufsize : int
-            Size in bytes of expected response.
+        bytecode : array
+            Raw bytecodes to send.  Must be exactly 25-long array of bytes.
 
         Returns
         -------
         out : array
-            Response bytes.  A `bufsize`-length array of `int`s
-            represented in hex.
+            Response byte.  A 1-length array of `int`.
         """
-        xout = aapy.array_u08(1)
-        xout[0] = bytecode
-        xin = aapy.array_u08(bufsize)
-        ret = aapy.aa_spi_write(self.__device, xout, xin)
-        # TODO Use ret to catch Exceptions
-        out = map(hex, xin)
+        if isinstance(bytecode, array):
+            xout = bytecode
+        elif isinstance(bytecode, list):
+            xout = array('B', bytecode)
+        else:
+            raise Exception, 'bytecode must be a 25-long array of bytes'
+        xin = aapy.array_u08(25)
+        bytes_sent, data_recv = aapy.aa_spi_write(self.__device, xout, xin)
+        out = xin
         return out
 
 
