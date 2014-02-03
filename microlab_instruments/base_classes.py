@@ -181,7 +181,7 @@ class GPIBInstrument(Instrument):
         gpib.clear(self.__device)
 
     def write(self, scpi_string):
-        gpib.write(self.__device, scpi_string)
+        gpib.write(self.__device, scpi_string + '\n')
 
     def read(self):
         return gpib.read(self.__device, 4096)
@@ -191,16 +191,16 @@ class TCPIPInstrument(Instrument):
     def __init__(self, socket_pair):
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__socket.connect(socket_pair)
-        self.clear()
+        self.reset()
 
     def __del__(self):
         self.__socket.close()
 
-    def clear(self):
-        self.__socket.send('*CLR')
+    def reset(self):
+        self.write('*RST')
 
     def write(self, scpi_string):
-        self.__socket.send(scpi_string)
+        self.__socket.send(scpi_string + '\n')
 
     def read(self):
         return self.__socket.recv(4096)
