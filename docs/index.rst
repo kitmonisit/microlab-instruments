@@ -3,10 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Microlab Instruments's documentation!
-================================================
+====================
+Microlab Instruments
+====================
 
-Quick start:
+Quick start
+===========
 
 .. code-block:: bash
 
@@ -21,7 +23,8 @@ Quick start:
     kyurem.write('*IDN?')
     print kyurem.read()
 
-Contents:
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
