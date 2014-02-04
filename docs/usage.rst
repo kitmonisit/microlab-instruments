@@ -1,7 +1,13 @@
-========
-Usage
-========
+==================
+Usage and Tutorial
+==================
 
-To use Microlab Instruments in a project::
+To use Microlab Instruments in a project
 
-	import microlab_instruments
+.. code-block:: python
+
+    import microlab_instruments as mi
+
+    kyurem = mi.Kyurem()
+    kyurem.write('*IDN?')
+    print kyurem.read()

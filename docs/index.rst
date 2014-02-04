@@ -4,7 +4,22 @@
    contain the root `toctree` directive.
 
 Welcome to Microlab Instruments's documentation!
-======================================
+================================================
+
+Quick start:
+
+.. code-block:: bash
+
+    $ pip install microlab-instruments
+    $ python
+
+.. code-block:: python
+
+    import microlab_instruments as mi
+
+    kyurem = mi.Kyurem()
+    kyurem.write('*IDN?')
+    print kyurem.read()
 
 Contents:
 
@@ -14,6 +29,7 @@ Contents:
    readme
    installation
    usage
+   microlab_instruments
    contributing
    authors
    history

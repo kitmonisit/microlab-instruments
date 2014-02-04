@@ -20,7 +20,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='microlab_instruments',
     version='0.1.0',
-    description='''Microlab Instruments is an abstraction layer for all the GPIB/Ethernet/USB/Serial instruments in the Microlab. All you have to do is instantiate an instrument class and with the help of each instrument's SCPI command reference, just ask(), write(), or read() commands. No need to worry about hardware and protocol settings.''',
+    description='''Microlab Instruments is an abstraction layer for all the GPIB/Ethernet/USB/Serial instruments in the Microlab. All you have to do is instantiate an instrument class and with the help of each instrument's SCPI command reference, just use the ``ask()``, ``write()``, or ``read()`` methods. No need to worry about hardware and protocol settings.''',
     long_description=readme + '\n\n' + history,
     author='Kristofer Monisit',
     author_email='kmonisit@gmail.com',

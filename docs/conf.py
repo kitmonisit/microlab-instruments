@@ -258,3 +258,21 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# -- More options --------------------------------------------------------
+autoclass_content = 'both'
+
+# -- Options for skipping ------------------------------------------------
+#def skip_I2C_STATUS_CODES(app, what, name, obj, skip, options):
+    #"""Don't include AardvarkInstrument.I2C_STATUS_CODES
+    #"""
+    #skip_I2C_STATUS_CODES = str(obj).find('I2C_STATUS_CODES') != -1
+    #if str(obj).find('I2C_STATUS_CODES') != -1:
+        #print obj
+        #return True
+    #return skip or skip_I2C_STATUS_CODES
+
+
+#def setup(app):
+    #app.connect('autodoc-skip-member', skip_I2C_STATUS_CODES)
