@@ -6,9 +6,9 @@
    :synopsis: Defines the base classes from which all instruments are derived.
 """
 
-#import aardvark_py as aapy
-#import gpib
-#import serial
+import aardvark_py as aapy
+import gpib
+import serial
 import socket
 from random import randint
 from array import array
@@ -40,11 +40,12 @@ class AardvarkInstrument(object):
     def __init__(self):
         """Initialize an Aardvark.
 
-        :raises Exception: Upon instantiation, SPI communication is tested. A 25-long *array* of
-            bytes is sent twice to the Aardvark (and subsequently to the FPGA).
-            After the second attempt, a response identical to the *array* must be
-            received.  If not, an Exception is raised.  In this case, it may be
-            likely that the FPGA did not respond properly.
+        :raises Exception: Upon instantiation, SPI communication is tested. A
+        25-long *array* of bytes is sent twice to the Aardvark (and
+        subsequently to the FPGA).  After the second attempt, a response
+        identical to the *array* must be received.  If not, an Exception is
+        raised.  In this case, it may be likely that the FPGA did not respond
+        properly.
         """
         port = aapy.aa_find_devices(1)[1][0]
         self.__device = aapy.aa_open(port)
@@ -68,7 +69,7 @@ class AardvarkInstrument(object):
     def __spi_test(self):
         TEST_MESSAGE = array('B', [randint(0x00, 0xFF) for n in range(25)])
         self.spi_write(TEST_MESSAGE)
-        TEST_RESPONSE = self.spi_write(TEST_MESSAGE)
+        TEST_RESPONSE = self.spi_write(array('B', [0]*25))
         aa = map(hex, TEST_MESSAGE)
         bb = map(hex, TEST_RESPONSE)
         for match in zip(aa, bb):
