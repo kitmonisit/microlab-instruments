@@ -22,6 +22,14 @@ class Instrument(object):
         self.write(scpi_string)
         return self.read()
 
+    def ask_binary(self, scpi_string):
+        """Just the same as calling :meth:`.write` and :meth:`.read_binary`
+        consecutively.  See the methods implemented in the subclass for
+        details.
+        """
+        self.write(scpi_string)
+        return self.read_binary()
+
 
 class AardvarkInstrument(object):
     #: These are the status codes used by :meth:`.i2c_write`\ ,
@@ -236,11 +244,13 @@ class TCPIPInstrument(Instrument):
         self.reset()
 
     def __del__(self):
+        self.__socket.shutdown(socket.SHUT_RDWR)
         self.__socket.close()
 
     def reset(self):
         """Reset the instrument.
         """
+        self.write('*CLS')
         self.write('*RST')
 
     def write(self, scpi_string):
@@ -249,21 +259,69 @@ class TCPIPInstrument(Instrument):
 
         :param str scpi_string:
             A valid SCPI command. See the instrument's SCPI command reference.
+
+        :returns out:
+            The number of bytes sent
+        :rtype int:
         """
-        self.__socket.send(scpi_string + '\n')
+        out = self.__socket.send(scpi_string + '\n')
+        return out
 
     def read(self, bufsize=4096):
-        """Read ``bufsize`` bytes from instrument.
+        """Read ``bufsize`` bytes from instrument.  Use this method when you
+        are expecting an ASCII response terminated by ``\\n``.
 
         :param int bufsize:
             Defaults to 4096 bytes. Expected size in bytes of the response from
             the instrument.
 
         :returns out:
+            ASCII response from the instrument.
+        :rtype: str
+        """
+        out = ''
+        while '\n' not in out:
+            out += self.__socket.recv(bufsize)
+        return out
+
+    def read_binary(self):
+        """Read raw binary data from instrument.
+
+        :returns out:
             Response from the instrument.
         :rtype: str
         """
-        return self.__socket.recv(bufsize)
+        # Read number of decimal digits to represent expected data size
+        s = self.__socket.recv(2)
+        size_length = int(s[1])
+
+        # Read expected data size
+        s = self.__socket.recv(size_length)
+        expected_size = int(s) + 1
+
+        # Read actual data
+        out = ''
+        while len(out) < expected_size:
+            out += self.__socket.recv(expected_size)
+        return out
+
+    def read_single(self):
+        """Read IEEE-754 single-precision data from instrument.
+
+        :returns out:
+            A list of single-precision floating-point numbers.
+        :rtype: list
+        """
+        pass
+
+    def read_double(self):
+        """Read IEEE-754 double-precision data from instrument.
+
+        :returns out:
+            A list of double-precision floating-point numbers.
+        :rtype: list
+        """
+        pass
 
 
 class SerialInstrument(Instrument):
