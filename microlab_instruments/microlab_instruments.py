@@ -96,6 +96,8 @@ ZYGARDE  = {
     'byte_order_little': '',
     }
 
+
+
 class Arceus(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = ARCEUS
@@ -120,18 +122,41 @@ class Deoxys(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = DEOXYS
         super(Deoxys, self).__init__(socket_pair=self.DATA['socket'])
+        self.write(':waveform:byteorder msbfirst')
+        self.write(':waveform:format word')
+        self.write('*OPC')
 
     # TODO Read :waveform:preamble
+    #           format WORD
+    #           type   :waveform:type?
+    #           points :waveform:points? can be found in the header of :waveform:data?
+    #           count  :acquire:count? averaging for one data point, etc
+    #           xincrement
+    #           xorigin
+    #           xreference
+    #           yincrement
+    #           yorigin
+    #           yreference
+
     # TODO Read :waveform:data
+    #           :waveform:byteorder DONE
+    #           :waveform:unsigned  DONE
+    #           :waveform:format    DONE
+    #           :waveform:source    channel | function | math | pod | bus | sbus
+    #           0x0000 hole
+    #           0x0001 clipped low
+    #           0xFFFF clipped high
     # TODO Read :save:waveform:start
 
 class Genesect(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = GENESECT
         super(Genesect, self).__init__(socket_pair=self.DATA['socket'])
+        self.write(':format:data real,32')
+        self.write('*OPC')
 
     def read_ieee754(self):
-        """Read IEEE-754 single-precision data from instrument.
+        """Read IEEE-754 floating-point data from instrument.
 
         :returns out:
             A list of floating-point numbers.
@@ -168,9 +193,11 @@ class Giratina(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = GIRATINA
         super(Giratina, self).__init__(socket_pair=self.DATA['socket'])
+        self.write(':format:data real,32')
+        self.write('*OPC')
 
     def read_ieee754(self):
-        """Read IEEE-754 single-precision data from instrument.
+        """Read IEEE-754 floating-point data from instrument.
 
         :returns out:
             A list of floating-point numbers.
@@ -227,9 +254,11 @@ class Yveltal(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = YVELTAL
         super(Yveltal, self).__init__(socket_pair=self.DATA['socket'])
+        self.write(':format:data real,32')
+        self.write('*OPC')
 
     def read_ieee754(self):
-        """Read IEEE-754 single-precision data from instrument.
+        """Read IEEE-754 floating-point data from instrument.
 
         :returns out:
             A list of floating-point numbers.

@@ -12,7 +12,6 @@ import serial
 import socket
 from random import randint
 from array import array
-from struct import unpack
 
 class Instrument(object):
     def __is_little_endian(self):
