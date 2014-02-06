@@ -15,6 +15,12 @@ from array import array
 from struct import unpack
 
 class Instrument(object):
+    def __is_little_endian(self):
+        """Returns ``True`` if the most significant bit as at the right,
+        ``False`` if the most significant bit is at the left.
+        """
+        return self.ask(self.DATA['get_byte_order']) == self.DATA['byte_order_little']
+
     def ask(self, scpi_string):
         """Just the same as calling :meth:`.write` and :meth:`.read`
         consecutively.  See the methods implemented in the subclass for
@@ -276,12 +282,6 @@ class TCPIPInstrument(Instrument):
         s = self.__socket.recv(size_length)
         expected_size = int(s) + 1
         return expected_size
-
-    def __is_little_endian(self):
-        """Returns ``True`` if the most significant bit as at the right,
-        ``False`` if the most significant bit is at the left.
-        """
-        return self.ask(self.DATA['get_byte_order']) == 'NORM'
 
     def reset(self):
         """Reset the instrument.
