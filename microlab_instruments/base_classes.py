@@ -337,64 +337,6 @@ class TCPIPInstrument(Instrument):
             out += self.__socket.recv(expected_size)
         return out
 
-    def read_single(self):
-        """Read IEEE-754 single-precision data from instrument.
-
-        :returns out:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self.__get_expected_bytes()
-
-        # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
-
-        # Discard the newline character
-        out = out[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        n = (expected_size - 1)/4
-
-        # Get byte order
-        b = '<' if self.__is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, out))
-        return out
-
-    def read_double(self):
-        """Read IEEE-754 double-precision data from instrument.
-
-        :returns out:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self.__get_expected_bytes()
-
-        # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
-
-        # Discard the newline character
-        out = out[:-1]
-
-        # Calculate number of floating point data points
-        # 1 double-precision number is 8 bytes
-        n = (expected_size - 1)/8
-
-        # Get byte order
-        b = '<' if self.__is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, out))
-        return out
-
 
 class SerialInstrument(Instrument):
     def __init__(self, device_port):
