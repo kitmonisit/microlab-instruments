@@ -138,14 +138,47 @@ class Deoxys(bc.TCPIPInstrument):
     #           yorigin
     #           yreference
 
-    # TODO Read :waveform:data
-    #           :waveform:byteorder DONE
-    #           :waveform:unsigned  DONE
-    #           :waveform:format    DONE
-    #           :waveform:source    channel | function | math | pod | bus | sbus
-    #           0x0000 hole
-    #           0x0001 clipped low
-    #           0xFFFF clipped high
+    def read_ieee754(self):
+        """Read IEEE-754 floating-point data from instrument.
+
+        :returns out:
+            A two-column list of floating-point numbers, where the first column
+            contains the X values and the second column contains the Y values.
+        :rtype: list
+        """
+        # TODO Read :waveform:data
+        #           :waveform:byteorder DONE
+        #           :waveform:unsigned  DONE
+        #           :waveform:format    DONE
+        #           :waveform:source    channel | function | math | pod | bus | sbus
+        #           0x0000 hole
+        #           0x0001 clipped low
+        #           0xFFFF clipped high
+
+        expected_size = self.__get_expected_bytes()
+
+        # Read actual data
+        out = ''
+        while len(out) < expected_size:
+            out += self.__socket.recv(expected_size)
+
+        # Discard the newline character
+        out = out[:-1]
+
+        # Calculate number of floating point data points
+        # 1 single-precision number is 4 bytes
+        n = (expected_size - 1)/4
+
+        # Get byte order
+        b = '<' if self.__is_little_endian() else '>'
+
+        # Convert the binary data to Python ``float``s
+        fmt = '{0}{1}f'.format(b, n)
+        out = list(unpack(fmt, out))
+        # TODO Need to adjust these for special values (clipped, etc)
+        # TODO Need to adjust these according to preamble
+        # TODO Need to compose X and Y values
+        return out
     # TODO Read :save:waveform:start
 
 class Genesect(bc.TCPIPInstrument):
