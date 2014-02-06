@@ -33,8 +33,8 @@ DARKRAI  = {
 DEOXYS   = {
     'name'             : 'Agilent InfiniiVision MSO7104A Mixed Signal Oscilloscope',
     'socket'           : ('192.168.1.10', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'get_byte_order'   : ':waveform:byteorder?',
+    'byte_order_little': 'LSBF',
     }
 GENESECT = {
     'name'             : 'Agilent B2962A Power Source',
@@ -109,6 +109,10 @@ class Deoxys(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = DEOXYS
         super(Deoxys, self).__init__(socket_pair=self.DATA['socket'])
+
+    # TODO Read :waveform:preamble
+    # TODO Read :waveform:data
+    # TODO Read :save:waveform:start
 
 class Genesect(bc.TCPIPInstrument):
     def __init__(self):

@@ -26,6 +26,8 @@ class Instrument(object):
         consecutively.  See the methods implemented in the subclass for
         details.
         """
+        # TODO Check if there is a need to *OPC?
+        # Do several .write()'s accumulate responses at output?
         self.write(scpi_string)
         return self.read()
 
