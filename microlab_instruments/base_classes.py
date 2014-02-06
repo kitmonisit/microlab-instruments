@@ -281,10 +281,7 @@ class TCPIPInstrument(Instrument):
         """Returns ``True`` if the most significant bit as at the right,
         ``False`` if the most significant bit is at the left.
         """
-        # TODO ':format:border' may not be the correct SCPI command for all
-        # instruments Move this method to the corresponding instrument
-        # subclass.
-        return self.ask(':format:border?') == 'NORM'
+        return self.ask(self.DATA['get_byte_order']) == 'NORM'
 
     def reset(self):
         """Reset the instrument.
