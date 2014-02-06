@@ -257,17 +257,17 @@ class TCPIPInstrument(Instrument):
 
     def __get_expected_bytes(self):
         """Used by methods that expect fixed-length binary or IEEE-754 data.
-        The format of such a response is
+        The format of such a response is::
 
         #<number of decimal digits to represent size><size in bytes of payload>
 
         For example, the expected data payload is 1 byte long.  The beginning
-        of the response stream will look like this:
+        of the response stream will look like this::
 
         #11
 
         If the expected data payload is 1097 bytes long, then the beginning of
-        the response stream will look like this:
+        the response stream will look like this::
 
         #41097
 
