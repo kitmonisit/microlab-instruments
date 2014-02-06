@@ -126,20 +126,32 @@ class Deoxys(bc.TCPIPInstrument):
         self.write(':waveform:format word')
         self.write('*OPC')
 
-    # TODO Read :waveform:preamble
-    #           format WORD
-    #           type   :waveform:type?
-    #           points :waveform:points? can be found in the header of :waveform:data?
-    #           count  :acquire:count? averaging for one data point, etc
-    #           xincrement
-    #           xorigin
-    #           xreference
-    #           yincrement
-    #           yorigin
-    #           yreference
+    def ask_waveform_data(self):
+        self.write(':waveform:preamble?')
+        self.read_preamble()
+        self.write(':waveform:data?')
+        self.read_ieee754()
+        pass
+
+    def read_preamble(self):
+        pass
+        # TODO Combine write, preamble and data in one function
+        # TODO Read :waveform:preamble
+        #           format WORD
+        #           type   :waveform:type?
+        #           points :waveform:points? can be found in the header of :waveform:data?
+        #           count  :acquire:count? averaging for one data point, etc
+        #           xincrement
+        #           xorigin
+        #           xreference
+        #           yincrement
+        #           yorigin
+        #           yreference
+        # TODO Read :save:waveform:start I do not know how to transfer a file
 
     def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
+        """Read IEEE-754 floating-point data from instrument.  Call this method
+        after calling ``write(':waveform:data?')``.
 
         :returns out:
             A two-column list of floating-point numbers, where the first column
@@ -179,7 +191,6 @@ class Deoxys(bc.TCPIPInstrument):
         # TODO Need to adjust these according to preamble
         # TODO Need to compose X and Y values
         return out
-    # TODO Read :save:waveform:start
 
 class Genesect(bc.TCPIPInstrument):
     def __init__(self):
@@ -210,6 +221,7 @@ class Genesect(bc.TCPIPInstrument):
         precision = self.ask(':format:data?')
         if precision == 'REAL,32':
             num_bytes = 4
+        # 1 double-precision number is 8 bytes
         elif precision == 'REAL,64':
             num_bytes = 8
         n = (expected_size - 1)/num_bytes
@@ -251,6 +263,7 @@ class Giratina(bc.TCPIPInstrument):
         precision = self.ask(':format:data?')
         if precision == 'REAL,32':
             num_bytes = 4
+        # 1 double-precision number is 8 bytes
         elif precision == 'REAL,64':
             num_bytes = 8
         n = (expected_size - 1)/num_bytes
@@ -312,6 +325,7 @@ class Yveltal(bc.TCPIPInstrument):
         precision = self.ask(':format:data?')
         if precision == 'REAL,32':
             num_bytes = 4
+        # 1 double-precision number is 8 bytes
         elif precision == 'REAL,64':
             num_bytes = 8
         n = (expected_size - 1)/num_bytes
