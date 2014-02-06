@@ -12,6 +12,7 @@ import serial
 import socket
 from random import randint
 from array import array
+from struct import unpack
 
 class Instrument(object):
     def ask(self, scpi_string):
@@ -241,11 +242,46 @@ class TCPIPInstrument(Instrument):
         """
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__socket.connect(socket_pair)
+        self.__socket.settimeout(30)
         self.reset()
 
     def __del__(self):
         self.__socket.shutdown(socket.SHUT_RDWR)
         self.__socket.close()
+
+    def __get_expected_bytes(self):
+        """Used by methods that expect fixed-length binary or IEEE-754 data.
+        The format of such a response is
+
+        #<number of decimal digits to represent size><size in bytes of payload>
+
+        For example, the expected data payload is 1 byte long.  The beginning
+        of the response stream will look like this:
+
+        #11
+
+        If the expected data payload is 1097 bytes long, then the beginning of
+        the response stream will look like this:
+
+        #41097
+
+        The ``expected_size`` is increased by 1 to include the terminating
+        newline character.
+        """
+        # Read number of decimal digits to represent expected data size
+        s = self.__socket.recv(2)
+        size_length = int(s[1])
+
+        # Read expected data size in bytes
+        s = self.__socket.recv(size_length)
+        expected_size = int(s) + 1
+        return expected_size
+
+    def __is_little_endian(self):
+        """Returns ``True`` if the most significant bit as at the right,
+        ``False`` if the most significant bit is at the left.
+        """
+        return self.ask(':format:border?') == 'NORM'
 
     def reset(self):
         """Reset the instrument.
@@ -291,13 +327,7 @@ class TCPIPInstrument(Instrument):
             Response from the instrument.
         :rtype: str
         """
-        # Read number of decimal digits to represent expected data size
-        s = self.__socket.recv(2)
-        size_length = int(s[1])
-
-        # Read expected data size
-        s = self.__socket.recv(size_length)
-        expected_size = int(s) + 1
+        expected_size = self.__get_expected_bytes()
 
         # Read actual data
         out = ''
@@ -309,19 +339,59 @@ class TCPIPInstrument(Instrument):
         """Read IEEE-754 single-precision data from instrument.
 
         :returns out:
-            A list of single-precision floating-point numbers.
+            A list of floating-point numbers.
         :rtype: list
         """
-        pass
+        expected_size = self.__get_expected_bytes()
+
+        # Read actual data
+        out = ''
+        while len(out) < expected_size:
+            out += self.__socket.recv(expected_size)
+
+        # Discard the newline character
+        out = out[:-1]
+
+        # Calculate number of floating point data points
+        # 1 single-precision number is 4 bytes
+        n = (expected_size - 1)/4
+
+        # Get byte order
+        b = '<' if self.__is_little_endian() else '>'
+
+        # Convert the binary data to Python ``float``s
+        fmt = '{0}{1}f'.format(b, n)
+        out = list(unpack(fmt, out))
+        return out
 
     def read_double(self):
         """Read IEEE-754 double-precision data from instrument.
 
         :returns out:
-            A list of double-precision floating-point numbers.
+            A list of floating-point numbers.
         :rtype: list
         """
-        pass
+        expected_size = self.__get_expected_bytes()
+
+        # Read actual data
+        out = ''
+        while len(out) < expected_size:
+            out += self.__socket.recv(expected_size)
+
+        # Discard the newline character
+        out = out[:-1]
+
+        # Calculate number of floating point data points
+        # 1 double-precision number is 8 bytes
+        n = (expected_size - 1)/8
+
+        # Get byte order
+        b = '<' if self.__is_little_endian() else '>'
+
+        # Convert the binary data to Python ``float``s
+        fmt = '{0}{1}f'.format(b, n)
+        out = list(unpack(fmt, out))
+        return out
 
 
 class SerialInstrument(Instrument):
