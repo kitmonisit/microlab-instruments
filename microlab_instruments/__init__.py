@@ -5,6 +5,19 @@ __author__ = 'Kristofer Monisit'
 __email__ = 'kmonisit@gmail.com'
 __version__ = '0.1.0'
 
-from microlab_instruments import *
-from base_classes import AardvarkInstrument
+from microlab_instruments import \
+    Arceus, \
+    Meloetta, \
+    Xerneas, \
+    Darkrai, \
+    Deoxys, \
+    Genesect, \
+    Giratina, \
+    Heatran, \
+    Ho_oh, \
+    Kyurem, \
+    Rayquaza, \
+    Yveltal, \
+    Zygarde
+from base_classes import AardvarkInstrument as Aardvark
 
