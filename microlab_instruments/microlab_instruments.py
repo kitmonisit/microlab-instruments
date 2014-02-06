@@ -61,52 +61,56 @@ ZYGARDE  = {
 
 class Arceus(bc.GPIBInstrument):
     def __init__(self):
-        super(Arceus, self).__init__(nickname=ARCEUS['gpib_nickname'])
+        self.DATA = ARCEUS
+        super(Arceus, self).__init__(nickname=self.DATA['gpib_nickname'])
 
 class Meloetta(bc.GPIBInstrument):
     def __init__(self):
-        super(Meloetta, self).__init__(nickname=MELOETTA['gpib_nickname'])
+        self.DATA = MELOETTA
+        super(Meloetta, self).__init__(nickname=self.DATA['gpib_nickname'])
 
 class Xerneas(bc.GPIBInstrument):
     def __init__(self):
-        super(Xerneas, self).__init__(nickname=XERNEAS['gpib_nickname'])
+        self.DATA = XERNEAS
+        super(Xerneas, self).__init__(nickname=self.DATA['gpib_nickname'])
 
 class Darkrai(bc.TCPIPInstrument):
     def __init__(self):
-        super(Darkrai, self).__init__(socket_pair=DARKRAI['socket'])
+        self.DATA = DARKRAI
+        super(Darkrai, self).__init__(socket_pair=self.DATA['socket'])
 
 class Deoxys(bc.TCPIPInstrument):
     def __init__(self):
-        super(Deoxys, self).__init__(socket_pair=DEOXYS['socket'])
+        super(Deoxys, self).__init__(socket_pair=self.DATA['socket'])
 
 class Genesect(bc.TCPIPInstrument):
     def __init__(self):
-        super(Genesect, self).__init__(socket_pair=GENESECT['socket'])
+        super(Genesect, self).__init__(socket_pair=self.DATA['socket'])
 
 class Giratina(bc.TCPIPInstrument):
     def __init__(self):
-        super(Giratina, self).__init__(socket_pair=GIRATINA['socket'])
+        super(Giratina, self).__init__(socket_pair=self.DATA['socket'])
 
 class Heatran(bc.TCPIPInstrument):
     def __init__(self):
-        super(Heatran, self).__init__(socket_pair=HEATRAN['socket'])
+        super(Heatran, self).__init__(socket_pair=self.DATA['socket'])
 
 class Ho_oh(bc.TCPIPInstrument):
     def __init__(self):
-        super(Ho_oh, self).__init__(socket_pair=HO_OH['socket'])
+        super(Ho_oh, self).__init__(socket_pair=self.DATA['socket'])
 
 class Kyurem(bc.TCPIPInstrument):
     def __init__(self):
-        super(Kyurem, self).__init__(socket_pair=KYUREM['socket'])
+        super(Kyurem, self).__init__(socket_pair=self.DATA['socket'])
 
 class Rayquaza(bc.TCPIPInstrument):
     def __init__(self):
-        super(Rayquaza, self).__init__(socket_pair=RAYQUAZA['socket'])
+        super(Rayquaza, self).__init__(socket_pair=self.DATA['socket'])
 
 class Yveltal(bc.TCPIPInstrument):
     def __init__(self):
-        super(Yveltal, self).__init__(socket_pair=YVELTAL['socket'])
+        super(Yveltal, self).__init__(socket_pair=self.DATA['socket'])
 
 class Zygarde(bc.TCPIPInstrument):
     def __init__(self):
-        super(Zygarde, self).__init__(socket_pair=ZYGARDE['socket'])
+        super(Zygarde, self).__init__(socket_pair=self.DATA['socket'])
