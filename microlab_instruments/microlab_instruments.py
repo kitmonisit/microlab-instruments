@@ -158,7 +158,7 @@ class Deoxys(bc.TCPIPInstrument):
         .. _fpmurphy: http://fpmurphy.blogspot.com/2008/12/half-precision-floating-point-format_14.html
         """
         # Get byte order of input
-        bo = '<' if self.__is_little_endian() else '>'
+        bo = '<' if self._is_little_endian() else '>'
 
         # Preliminary unpacking
         fmt = '{0}H'.format(bo)
@@ -232,12 +232,12 @@ class Deoxys(bc.TCPIPInstrument):
         #           0x0000 hole
         #           0x0001 clipped low
         #           0xFFFF clipped high
-        expected_size = self.__get_expected_bytes()
+        expected_size = self._get_expected_bytes()
 
         # Read actual data
         stream = ''
         while len(stream) < expected_size:
-            stream += self.__socket.recv(expected_size)
+            stream += self._socket.recv(expected_size)
 
         # Discard the newline character
         stream = stream[:-1]
@@ -266,12 +266,12 @@ class Genesect(bc.TCPIPInstrument):
             A list of floating-point numbers.
         :rtype: list
         """
-        expected_size = self.__get_expected_bytes()
+        expected_size = self._get_expected_bytes()
 
         # Read actual data
         stream = ''
         while len(stream) < expected_size:
-            stream += self.__socket.recv(expected_size)
+            stream += self._socket.recv(expected_size)
 
         # Discard the newline character
         stream = stream[:-1]
@@ -287,7 +287,7 @@ class Genesect(bc.TCPIPInstrument):
         n = (expected_size - 1)/num_bytes
 
         # Get byte order
-        b = '<' if self.__is_little_endian() else '>'
+        b = '<' if self._is_little_endian() else '>'
 
         # Convert the binary data to Python ``float``s
         fmt = '{0}{1}f'.format(b, n)
@@ -308,12 +308,12 @@ class Giratina(bc.TCPIPInstrument):
             A list of floating-point numbers.
         :rtype: list
         """
-        expected_size = self.__get_expected_bytes()
+        expected_size = self._get_expected_bytes()
 
         # Read actual data
         stream = ''
         while len(stream) < expected_size:
-            stream += self.__socket.recv(expected_size)
+            stream += self._socket.recv(expected_size)
 
         # Discard the newline character
         stream = stream[:-1]
@@ -329,7 +329,7 @@ class Giratina(bc.TCPIPInstrument):
         n = (expected_size - 1)/num_bytes
 
         # Get byte order
-        b = '<' if self.__is_little_endian() else '>'
+        b = '<' if self._is_little_endian() else '>'
 
         # Convert the binary data to Python ``float``s
         fmt = '{0}{1}f'.format(b, n)
@@ -370,19 +370,19 @@ class Yveltal(bc.TCPIPInstrument):
             A list of floating-point numbers.
         :rtype: list
         """
-        expected_size = self.__get_expected_bytes()
+        expected_size = self._get_expected_bytes()
 
         # Read actual data
         stream = ''
         while len(stream) < expected_size:
-            stream += self.__socket.recv(expected_size)
+            stream += self._socket.recv(expected_size)
 
         # Discard the newline character
         stream = stream[:-1]
 
         # Calculate number of floating point data points
         # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')
+        precision = self.ask(':format:data?')[:-1] # discard newline
         if precision == 'REAL,32':
             num_bytes = 4
         # 1 double-precision number is 8 bytes
@@ -391,7 +391,7 @@ class Yveltal(bc.TCPIPInstrument):
         n = (expected_size - 1)/num_bytes
 
         # Get byte order
-        b = '<' if self.__is_little_endian() else '>'
+        b = '<' if self._is_little_endian() else '>'
 
         # Convert the binary data to Python ``float``s
         fmt = '{0}{1}f'.format(b, n)

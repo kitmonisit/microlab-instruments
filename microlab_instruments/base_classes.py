@@ -14,7 +14,7 @@ from random import randint
 from array import array
 
 class Instrument(object):
-    def __is_little_endian(self):
+    def _is_little_endian(self):
         """Returns ``True`` if the most significant bit as at the right,
         ``False`` if the most significant bit is at the left.
         """
@@ -247,16 +247,16 @@ class TCPIPInstrument(Instrument):
         :param tuple socket_pair:
             A 2-tuple of the form ``('192.168.1.2', 5025)``.
         """
-        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__socket.connect(socket_pair)
-        self.__socket.settimeout(30)
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.connect(socket_pair)
+        self._socket.settimeout(30)
         self.reset()
 
     def __del__(self):
-        self.__socket.shutdown(socket.SHUT_RDWR)
-        self.__socket.close()
+        self._socket.shutdown(socket.SHUT_RDWR)
+        self._socket.close()
 
-    def __get_expected_bytes(self):
+    def _get_expected_bytes(self):
         """Used by methods that expect fixed-length binary or IEEE-754 data.
         The format of such a response is::
 
@@ -276,11 +276,11 @@ class TCPIPInstrument(Instrument):
         newline character.
         """
         # Read number of decimal digits to represent expected data size
-        s = self.__socket.recv(2)
+        s = self._socket.recv(2)
         size_length = int(s[1])
 
         # Read expected data size in bytes
-        s = self.__socket.recv(size_length)
+        s = self._socket.recv(size_length)
         expected_size = int(s) + 1
         return expected_size
 
@@ -301,7 +301,7 @@ class TCPIPInstrument(Instrument):
             The number of bytes sent
         :rtype int:
         """
-        out = self.__socket.send(scpi_string + '\n')
+        out = self._socket.send(scpi_string + '\n')
         return out
 
     def read(self, bufsize=4096):
@@ -318,7 +318,7 @@ class TCPIPInstrument(Instrument):
         """
         out = ''
         while '\n' not in out:
-            out += self.__socket.recv(bufsize)
+            out += self._socket.recv(bufsize)
         return out
 
     def read_binary(self):
@@ -328,12 +328,12 @@ class TCPIPInstrument(Instrument):
             Response from the instrument.
         :rtype: str
         """
-        expected_size = self.__get_expected_bytes()
+        expected_size = self._get_expected_bytes()
 
         # Read actual data
         out = ''
         while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
+            out += self._socket.recv(expected_size)
         return out
 
 
