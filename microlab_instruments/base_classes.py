@@ -20,23 +20,35 @@ class Instrument(object):
         """
         return self.ask(self.DATA['get_byte_order']) == self.DATA['byte_order_little']
 
-    def write(self, scpi_string):
-        """Write SCPI command to the instrument.  The end-of-string character
-        (for example, ``\\n``) is automatically appended.  The actual method
-        used depends on the type of connection.
+    def _get_expected_bytes(self):
+        """Used by methods that expect fixed-length binary or IEEE-754 data.
+        The format of such a response is::
 
-        :param str scpi_string:
-            A valid SCPI command. See the instrument's SCPI command reference.
+        #<number of decimal digits to represent size><size in bytes of payload>
+
+        For example, the expected data payload is 1 byte long.  The beginning
+        of the response stream will look like this::
+
+        #11
+
+        If the expected data payload is 1097 bytes long, then the beginning of
+        the response stream will look like this::
+
+        #41097
+
         """
-        s = ''.join([scpi_string, '\n'])
-        if issubclass(self.__class__, TCPIPInstrument):
-            return self._socket.send(s)
-        elif issubclass(self.__class__, GPIBInstrument):
-            return gpib.write(self._device, s)
+        # Read number of decimal digits to represent expected data size
+        s = self.read(2)
+        size_length = int(s[1])
 
-    def read(self, bufsize=4096):
-        """Read ``bufsize`` bytes from GPIB instrument.  The actual method used
-        depends on the type of connection.
+        # Read expected data size in bytes.  The ``expected_size`` is increased
+        # by 1 to include the terminating newline character.
+        s = self.read(size_length)
+        expected_size = int(s) + 1
+        return expected_size
+
+    def read_ascii(self, bufsize=4096):
+        """Read ASCII response from instrument.
 
         :param int bufsize:
             Defaults to 4096 bytes.  Expected size in bytes of the response
@@ -46,17 +58,31 @@ class Instrument(object):
             Response from the instrument.
         :rtype: str
         """
-        if issubclass(self.__class__, TCPIPInstrument):
-            stream = []
-            while True:
-                s = self._socket.recv(bufsize)
-                stream.append(s)
-                if '\n' in s:
-                    break
-            out = ''.join(stream)
-            return out
-        elif issubclass(self.__class__, GPIBInstrument):
-            return gpib.read(self._device, bufsize)
+        stream = []
+        while True:
+            s = self.read(bufsize)
+            stream.append(s)
+            if '\n' in s:
+                break
+        out = ''.join(stream)
+        return out
+
+    def read_binary(self):
+        """Read raw binary data from instrument.
+
+        :returns out:
+            Response from the instrument.
+        :rtype: str
+        """
+        expected_size = self._get_expected_bytes()
+
+        # Read actual data
+        stream = []
+        while sum(map(len, stream)) < expected_size:
+            s = self.read(expected_size)
+            stream.append(s)
+        out = ''.join(stream)
+        return out
 
     def ask(self, scpi_string):
         """Just the same as calling :meth:`.write` and :meth:`.read`
@@ -247,12 +273,37 @@ class GPIBInstrument(Instrument):
         self.reset()
 
     def __del__(self):
+        """Close the GPIB conection.
+        """
         gpib.close(self.__device)
 
     def reset(self):
         """Reset the GPIB instrument.
         """
         gpib.clear(self.__device)
+
+    def write(self, scpi_string):
+        """Write SCPI command to the instrument.  The end-of-string character
+        (for example, ``\\n``) is automatically appended.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
+        """
+        s = ''.join([scpi_string, '\n'])
+        return gpib.write(self._device, s)
+
+    def read(self, bufsize=4096):
+        """Read ``bufsize`` bytes from instrument.
+
+        :param int bufsize:
+            Defaults to 4096 bytes.  Expected size in bytes of the response
+            from the instrument.
+
+        :returns out:
+            Response from the instrument.
+        :rtype: str
+        """
+        return gpib.read(self._device, bufsize)
 
 
 class TCPIPInstrument(Instrument):
@@ -268,36 +319,10 @@ class TCPIPInstrument(Instrument):
         self.reset()
 
     def __del__(self):
+        """Close the socket connection properly.
+        """
         self._socket.shutdown(socket.SHUT_RDWR)
         self._socket.close()
-
-    def _get_expected_bytes(self):
-        """Used by methods that expect fixed-length binary or IEEE-754 data.
-        The format of such a response is::
-
-        #<number of decimal digits to represent size><size in bytes of payload>
-
-        For example, the expected data payload is 1 byte long.  The beginning
-        of the response stream will look like this::
-
-        #11
-
-        If the expected data payload is 1097 bytes long, then the beginning of
-        the response stream will look like this::
-
-        #41097
-
-        The ``expected_size`` is increased by 1 to include the terminating
-        newline character.
-        """
-        # Read number of decimal digits to represent expected data size
-        s = self._socket.recv(2)
-        size_length = int(s[1])
-
-        # Read expected data size in bytes
-        s = self._socket.recv(size_length)
-        expected_size = int(s) + 1
-        return expected_size
 
     def reset(self):
         """Reset the instrument.
@@ -305,20 +330,28 @@ class TCPIPInstrument(Instrument):
         self.write('*CLS')
         self.write('*RST')
 
-    def read_binary(self):
-        """Read raw binary data from instrument.
+    def write(self, scpi_string):
+        """Write SCPI command to the instrument.  The end-of-string character
+        (for example, ``\\n``) is automatically appended.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
+        """
+        s = ''.join([scpi_string, '\n'])
+        return self._socket.send(s)
+
+    def read(self, bufsize=4096):
+        """Read ``bufsize`` bytes from instrument.
+
+        :param int bufsize:
+            Defaults to 4096 bytes.  Expected size in bytes of the response
+            from the instrument.
 
         :returns out:
             Response from the instrument.
         :rtype: str
         """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self._socket.recv(expected_size)
-        return out
+        return self._socket.recv(bufsize)
 
 
 class SerialInstrument(Instrument):
