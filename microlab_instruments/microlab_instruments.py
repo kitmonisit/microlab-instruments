@@ -6,19 +6,19 @@ from struct import pack, unpack
 
 # GPIB Instruments
 ARCEUS   = {
-    'gpib_nickname'    : 'arceus',
+    'nickname'         : 'arceus',
     'name'             : 'Agilent 8753ES S-Parameter Network Analyzer',
     'get_byte_order'   : '',
     'byte_order_little': '',
     }
 MELOETTA = {
-    'gpib_nickname'    : 'meloetta',
+    'nickname'         : 'meloetta',
     'name'             : 'Hewlett-Packard 6623A System DC Power Supply',
     'get_byte_order'   : '',
     'byte_order_little': '',
     }
 XERNEAS  = {
-    'gpib_nickname'    : 'xerneas',
+    'nickname'         : 'xerneas',
     'name'             : 'Hewlett-Packard 4156A Precision Semiconductor Parameter Analyzer',
     'get_byte_order'   : '',
     'byte_order_little': '',
@@ -109,19 +109,19 @@ ZYGARDE  = {
 class Arceus(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = ARCEUS
-        super(Arceus, self).__init__(nickname=self.DATA['gpib_nickname'])
+        super(Arceus, self).__init__(nickname=self.DATA['nickname'])
 
 
 class Meloetta(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = MELOETTA
-        super(Meloetta, self).__init__(nickname=self.DATA['gpib_nickname'])
+        super(Meloetta, self).__init__(nickname=self.DATA['nickname'])
 
 
 class Xerneas(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = XERNEAS
-        super(Xerneas, self).__init__(nickname=self.DATA['gpib_nickname'])
+        super(Xerneas, self).__init__(nickname=self.DATA['nickname'])
 
 
 class Darkrai(bc.TCPIPInstrument):
