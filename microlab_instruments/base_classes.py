@@ -131,23 +131,35 @@ class Instrument(object):
             out = map(self._half_to_float, stream)
             return out
 
-    def ask(self, scpi_string):
-        """Just the same as calling :meth:`.write` and :meth:`.read`
-        consecutively.  See the methods implemented in the subclass for
-        details.
+    def ask_ascii(self, scpi_string):
+        """A convenience function for calling :meth:`.write` and
+        :meth:`.read_ascii` consecutively.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
         """
-        # TODO Check if there is a need to *OPC?
-        # Do several .write()'s accumulate responses at output?
         self.write(scpi_string)
-        return self.read()
+        return self.read_ascii()
 
     def ask_binary(self, scpi_string):
-        """Just the same as calling :meth:`.write` and :meth:`.read_binary`
-        consecutively.  See the methods implemented in the subclass for
-        details.
+        """A convenience function for calling :meth:`.write` and
+        :meth:`.read_binary` consecutively.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
         """
         self.write(scpi_string)
         return self.read_binary()
+
+    def ask_ieee754(self, scpi_string):
+        """A convenience function for calling :meth:`.write` and
+        :meth:`.read_ieee754` consecutively.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
+        """
+        self.write(scpi_string)
+        return self.read_ieee754()
 
 
 class AardvarkInstrument(object):
