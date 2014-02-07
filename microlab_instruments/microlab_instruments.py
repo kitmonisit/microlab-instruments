@@ -241,15 +241,10 @@ class Deoxys(bc.TCPIPInstrument):
         #           0x0000 hole
         #           0x0001 clipped low
         #           0xFFFF clipped high
-        expected_size = self._get_expected_bytes()
 
         # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
+        # and discard the newline character
+        stream = self.read_binary()[:-1]
 
         # Chop the stream into 16-bit elements
         stream = [w for w in self.__chop16(stream)]
