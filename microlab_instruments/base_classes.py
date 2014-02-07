@@ -84,6 +84,35 @@ class Instrument(object):
         out = ''.join(stream)
         return out
 
+    def read_ieee754(self):
+        """Read IEEE-754 floating-point data from instrument.
+
+        :returns out:
+            A list of floating-point numbers.
+        :rtype: list
+        """
+        # Read actual data
+        # and discard the newline character
+        stream = self.read_binary()[:-1]
+
+        # Calculate number of floating point data points
+        # 1 single-precision number is 4 bytes
+        precision = self.ask(self.DATA['get_data_format'])
+        if precision == self.DATA['data_format_single']:
+            num_bytes = 4
+        # 1 double-precision number is 8 bytes
+        elif precision == self.DATA['data_format_double']:
+            num_bytes = 8
+        n = len(stream)*8/num_bytes
+
+        # Get byte order
+        b = '<' if self._is_little_endian() else '>'
+
+        # Convert the binary data to Python ``float``s
+        fmt = '{0}{1}f'.format(b, n)
+        out = list(unpack(fmt, stream))
+        return out
+
     def ask(self, scpi_string):
         """Just the same as calling :meth:`.write` and :meth:`.read`
         consecutively.  See the methods implemented in the subclass for

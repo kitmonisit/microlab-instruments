@@ -268,82 +268,12 @@ class Genesect(bc.TCPIPInstrument):
         self.write(':format:data real,32')
         self.write('*OPC')
 
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
-
-        :returns out:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')
-        if precision == 'REAL,32':
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == 'REAL,64':
-            num_bytes = 8
-        n = (expected_size - 1)/num_bytes
-
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
-
 class Giratina(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = GIRATINA
         super(Giratina, self).__init__(socket_pair=self.DATA['socket'])
         self.write(':format:data real,32')
         self.write('*OPC')
-
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
-
-        :returns stream:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')
-        if precision == 'REAL,32':
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == 'REAL,64':
-            num_bytes = 8
-        n = (expected_size - 1)/num_bytes
-
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
 
 class Heatran(bc.TCPIPInstrument):
     def __init__(self):
@@ -371,41 +301,6 @@ class Yveltal(bc.TCPIPInstrument):
         super(Yveltal, self).__init__(socket_pair=self.DATA['socket'])
         self.write(':format:data real,32')
         self.write('*OPC')
-
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
-
-        :returns stream:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')[:-1] # discard newline
-        if precision == 'REAL,32':
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == 'REAL,64':
-            num_bytes = 8
-        n = (expected_size - 1)/num_bytes
-
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
 
 class Zygarde(bc.TCPIPInstrument):
     def __init__(self):
