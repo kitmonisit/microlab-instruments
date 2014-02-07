@@ -137,7 +137,7 @@ class Deoxys(bc.TCPIPInstrument):
         pass
         # TODO Combine write, preamble and data in one function
         # TODO Read :waveform:preamble
-        #           format WORD
+        #           format WORD this is two bytes for each data point
         #           type   :waveform:type?
         #           points :waveform:points? can be found in the header of :waveform:data?
         #           count  :acquire:count? averaging for one data point, etc
@@ -149,9 +149,9 @@ class Deoxys(bc.TCPIPInstrument):
         #           yreference
         # TODO Read :save:waveform:start I do not know how to transfer a file
 
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.  Call this method
-        after calling ``write(':waveform:data?')``.
+    def read_word(self):
+        """Read WORD data from instrument.  Call this method after calling
+        ``write(':waveform:data?')``.
 
         :returns out:
             A two-column list of floating-point numbers, where the first column
@@ -178,8 +178,8 @@ class Deoxys(bc.TCPIPInstrument):
         out = out[:-1]
 
         # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        n = (expected_size - 1)/4
+        # 1 WORD is 2 bytes
+        n = (expected_size - 1)/2
 
         # Get byte order
         b = '<' if self.__is_little_endian() else '>'
