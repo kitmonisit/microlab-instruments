@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import base_classes as bc
-from struct import unpack
+from struct import pack, unpack
 
 # GPIB Instruments
 ARCEUS   = {
@@ -126,11 +126,70 @@ class Deoxys(bc.TCPIPInstrument):
         self.write(':waveform:format word')
         self.write('*OPC')
 
-    def __half_to_float(self):
-        """Converts half-precision floating-point (16-bit) binary data to
-        Python ``float``\ s.
+    def __chop16(self, s):
+        """A generator that, given a string, yields its 16-bit slices.
+
+        :param str s:
+            The string to be chopped
+        :returns out:
+            A two-character (16-bit) string.
+        :rtype: str
         """
-        pass
+        n = 0
+        while True:
+            k = s[n:n+2]
+            if not k:
+                break
+            yield k
+            n += 2
+
+    def __half_to_float(self, half):
+        """Converts half-precision floating-point (16-bit) binary data to
+        Python ``float``\ .
+
+        :param str half:
+            A 16-bit string to be converted to a Python float
+        :returns out:
+            The actual floating point number represented by the 16-bit string.
+        :rtype: float
+
+        This was copied from `fpmurphy`_
+
+        .. _fpmurphy: http://fpmurphy.blogspot.com/2008/12/half-precision-floating-point-format_14.html
+        """
+        # Get byte order of input
+        bo = '<' if self.__is_little_endian() else '>'
+
+        # Preliminary unpacking
+        fmt = '{0}H'.format(bo)
+        h = unpack(fmt, half)[0]
+
+        # Pad 16 bits to 32 bits
+        s = int((h >> 15) & 0x00000001)  # sign
+        e = int((h >> 10) & 0x0000001F)  # exponent
+        f = int(h         & 0x000003FF)  # fraction
+        if e == 0x00:   # exponent is 0
+            if f == 0x00:
+                hpad = int(s << 31)
+            else:
+                while not (f & 0x00000400):
+                    f <<= 1
+                    e -= 1
+                e += 1
+                f &= ~0x00000400
+        elif e == 0x1F: # exponent is 31
+            if f == 0x00:
+                hpad = int((s << 31) | 0x7F800000)
+            else:
+                hpad = int((s << 31) | 0x7F800000 | (f << 13))
+        e = e + (127 - 15)
+        f = f << 13
+        hpad = int((s << 31) | (e << 23) | f)
+
+        # struct.pack hack
+        st = pack('I', hpad)
+        out = unpack('f', st)
+        return out
 
     def ask_waveform_data(self):
         self.write(':waveform:preamble?')
@@ -173,27 +232,21 @@ class Deoxys(bc.TCPIPInstrument):
         #           0x0000 hole
         #           0x0001 clipped low
         #           0xFFFF clipped high
-
         expected_size = self.__get_expected_bytes()
 
         # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
+        stream = ''
+        while len(stream) < expected_size:
+            stream += self.__socket.recv(expected_size)
 
         # Discard the newline character
-        out = out[:-1]
+        stream = stream[:-1]
 
-        # Calculate number of floating point data points
-        # 1 half-precision number is 2 bytes
-        n = (expected_size - 1)/2
+        # Chop the stream into 16-bit elements
+        stream = [w for w in self.__chop16(stream)]
 
-        # Get byte order
-        b = '<' if self.__is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, out))
+        # Convert the stream into ``float``\ s
+        out = map(self.__half_to_float, stream)
         # TODO Need to adjust these for special values (clipped, etc)
         # TODO Need to adjust these according to preamble
         # TODO Need to compose X and Y values
