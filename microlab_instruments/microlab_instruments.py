@@ -126,6 +126,12 @@ class Deoxys(bc.TCPIPInstrument):
         self.write(':waveform:format word')
         self.write('*OPC')
 
+    def __half_to_float(self):
+        """Converts half-precision floating-point (16-bit) binary data to
+        Python ``float``\ s.
+        """
+        pass
+
     def ask_waveform_data(self):
         self.write(':waveform:preamble?')
         self.read_preamble()
@@ -150,8 +156,8 @@ class Deoxys(bc.TCPIPInstrument):
         # TODO Read :save:waveform:start I do not know how to transfer a file
 
     def read_word(self):
-        """Read WORD data from instrument.  Call this method after calling
-        ``write(':waveform:data?')``.
+        """Read half-precision floating-point data from instrument.  Call this
+        method after calling ``write(':waveform:data?')``.
 
         :returns out:
             A two-column list of floating-point numbers, where the first column
@@ -163,6 +169,7 @@ class Deoxys(bc.TCPIPInstrument):
         #           :waveform:unsigned  DONE
         #           :waveform:format    DONE
         #           :waveform:source    channel | function | math | pod | bus | sbus
+        #           :system:precision
         #           0x0000 hole
         #           0x0001 clipped low
         #           0xFFFF clipped high
@@ -178,7 +185,7 @@ class Deoxys(bc.TCPIPInstrument):
         out = out[:-1]
 
         # Calculate number of floating point data points
-        # 1 WORD is 2 bytes
+        # 1 half-precision number is 2 bytes
         n = (expected_size - 1)/2
 
         # Get byte order
@@ -209,12 +216,12 @@ class Genesect(bc.TCPIPInstrument):
         expected_size = self.__get_expected_bytes()
 
         # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
+        stream = ''
+        while len(stream) < expected_size:
+            stream += self.__socket.recv(expected_size)
 
         # Discard the newline character
-        out = out[:-1]
+        stream = stream[:-1]
 
         # Calculate number of floating point data points
         # 1 single-precision number is 4 bytes
@@ -231,7 +238,7 @@ class Genesect(bc.TCPIPInstrument):
 
         # Convert the binary data to Python ``float``s
         fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, out))
+        out = list(unpack(fmt, stream))
         return out
 
 class Giratina(bc.TCPIPInstrument):
@@ -244,19 +251,19 @@ class Giratina(bc.TCPIPInstrument):
     def read_ieee754(self):
         """Read IEEE-754 floating-point data from instrument.
 
-        :returns out:
+        :returns stream:
             A list of floating-point numbers.
         :rtype: list
         """
         expected_size = self.__get_expected_bytes()
 
         # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
+        stream = ''
+        while len(stream) < expected_size:
+            stream += self.__socket.recv(expected_size)
 
         # Discard the newline character
-        out = out[:-1]
+        stream = stream[:-1]
 
         # Calculate number of floating point data points
         # 1 single-precision number is 4 bytes
@@ -273,7 +280,7 @@ class Giratina(bc.TCPIPInstrument):
 
         # Convert the binary data to Python ``float``s
         fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, out))
+        out = list(unpack(fmt, stream))
         return out
 
 class Heatran(bc.TCPIPInstrument):
@@ -306,19 +313,19 @@ class Yveltal(bc.TCPIPInstrument):
     def read_ieee754(self):
         """Read IEEE-754 floating-point data from instrument.
 
-        :returns out:
+        :returns stream:
             A list of floating-point numbers.
         :rtype: list
         """
         expected_size = self.__get_expected_bytes()
 
         # Read actual data
-        out = ''
-        while len(out) < expected_size:
-            out += self.__socket.recv(expected_size)
+        stream = ''
+        while len(stream) < expected_size:
+            stream += self.__socket.recv(expected_size)
 
         # Discard the newline character
-        out = out[:-1]
+        stream = stream[:-1]
 
         # Calculate number of floating point data points
         # 1 single-precision number is 4 bytes
@@ -335,7 +342,7 @@ class Yveltal(bc.TCPIPInstrument):
 
         # Convert the binary data to Python ``float``s
         fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, out))
+        out = list(unpack(fmt, stream))
         return out
 
 class Zygarde(bc.TCPIPInstrument):
