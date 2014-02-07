@@ -106,26 +106,29 @@ ZYGARDE  = {
     }
 
 
-
 class Arceus(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = ARCEUS
         super(Arceus, self).__init__(nickname=self.DATA['gpib_nickname'])
+
 
 class Meloetta(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = MELOETTA
         super(Meloetta, self).__init__(nickname=self.DATA['gpib_nickname'])
 
+
 class Xerneas(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = XERNEAS
         super(Xerneas, self).__init__(nickname=self.DATA['gpib_nickname'])
 
+
 class Darkrai(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = DARKRAI
         super(Darkrai, self).__init__(socket_pair=self.DATA['socket'])
+
 
 class Deoxys(bc.TCPIPInstrument):
     def __init__(self):
@@ -263,12 +266,14 @@ class Deoxys(bc.TCPIPInstrument):
         out = self.compose_waveform_xy(waveform_y, waveform_preamble)
         return out
 
+
 class Genesect(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = GENESECT
         super(Genesect, self).__init__(socket_pair=self.DATA['socket'])
         self.write(':format:data real,32')
         self.write('*OPC')
+
 
 class Giratina(bc.TCPIPInstrument):
     def __init__(self):
@@ -277,25 +282,30 @@ class Giratina(bc.TCPIPInstrument):
         self.write(':format:data real,32')
         self.write('*OPC')
 
+
 class Heatran(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = HEATRAN
         super(Heatran, self).__init__(socket_pair=self.DATA['socket'])
+
 
 class Ho_oh(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = HO_OH
         super(Ho_oh, self).__init__(socket_pair=self.DATA['socket'])
 
+
 class Kyurem(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = KYUREM
         super(Kyurem, self).__init__(socket_pair=self.DATA['socket'])
 
+
 class Rayquaza(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = RAYQUAZA
         super(Rayquaza, self).__init__(socket_pair=self.DATA['socket'])
+
 
 class Yveltal(bc.TCPIPInstrument):
     def __init__(self):
@@ -304,7 +314,10 @@ class Yveltal(bc.TCPIPInstrument):
         self.write(':format:data real,32')
         self.write('*OPC')
 
+
 class Zygarde(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = ZYGARDE
         super(Zygarde, self).__init__(socket_pair=self.DATA['socket'])
+
+
