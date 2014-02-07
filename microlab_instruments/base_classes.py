@@ -12,6 +12,7 @@ import serial
 import socket
 from random import randint
 from array import array
+from struct import unpack
 
 class Instrument(object):
     def _is_little_endian(self):
@@ -95,23 +96,40 @@ class Instrument(object):
         # and discard the newline character
         stream = self.read_binary()[:-1]
 
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(self.DATA['get_data_format'])
-        if precision == self.DATA['data_format_single']:
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == self.DATA['data_format_double']:
-            num_bytes = 8
-        n = len(stream)*8/num_bytes
+        # Convert floating-point to Python ``float``
+        # single- or double-precision
+        if self.DATA['nickname'] in \
+                ('genesect',
+                 'giratina',
+                 'yveltal'):
 
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
+            # Calculate number of floating point data points
+            precision = self.ask(self.DATA['get_data_format'])
 
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
+            # one single-precision number is 4 bytes
+            if precision == self.DATA['data_format_single']:
+                num_bytes = 4
+            # one double-precision number is 8 bytes
+            elif precision == self.DATA['data_format_double']:
+                num_bytes = 8
+            n = len(stream)*8/num_bytes
+
+            # Get byte order
+            b = '<' if self._is_little_endian() else '>'
+
+            # Convert the binary data to Python ``float``s
+            fmt = '{0}{1}f'.format(b, n)
+            out = list(unpack(fmt, stream))
+            return out
+        # half-precision
+        elif self.DATA['nickname'] in \
+                ('deoxys',):
+            # Chop the stream into 16-bit elements
+            stream = [w for w in self._chop16(stream)]
+
+            # Convert the stream into ``float``\ s
+            out = map(self._half_to_float, stream)
+            return out
 
     def ask(self, scpi_string):
         """Just the same as calling :meth:`.write` and :meth:`.read`

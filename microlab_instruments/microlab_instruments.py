@@ -135,7 +135,7 @@ class Deoxys(bc.TCPIPInstrument):
         self.write(':waveform:format word')
         self.write('*OPC')
 
-    def __chop16(self, s):
+    def _chop16(self, s):
         """A generator that, given a string, yields its 16-bit slices.
 
         :param str s:
@@ -152,7 +152,7 @@ class Deoxys(bc.TCPIPInstrument):
             yield k
             n += 2
 
-    def __half_to_float(self, half):
+    def _half_to_float(self, half):
         """Converts half-precision floating-point (16-bit) binary data to
         Python ``float``\ .
 
@@ -200,15 +200,13 @@ class Deoxys(bc.TCPIPInstrument):
         out = unpack('f', st)
         return out
 
-    def ask_waveform_data(self):
-        self.write(':waveform:preamble?')
-        self.read_preamble()
-        self.write(':waveform:data?')
-        self.read_ieee754()
-        pass
-
     def read_preamble(self):
-        pass
+        """Read the waveform preamble from Deoxys.  It contains the following
+        metadata about the waveform data:
+
+        :returns out:
+        :rtype: dict
+        """
         # TODO Combine write, preamble and data in one function
         # TODO Read :waveform:preamble
         #           format WORD this is two bytes for each data point
@@ -222,14 +220,15 @@ class Deoxys(bc.TCPIPInstrument):
         #           yorigin
         #           yreference
         # TODO Read :save:waveform:start I do not know how to transfer a file
+        pass
 
-    def read_word(self):
-        """Read half-precision floating-point data from instrument.  Call this
-        method after calling ``write(':waveform:data?')``.
+    def compose_waveform_xy(self, waveform_y, waveform_preamble):
+        """Compose the (x,y) data list according to the y data and preamble
+        obtained from the instrument.
 
         :returns out:
-            A two-column list of floating-point numbers, where the first column
-            contains the X values and the second column contains the Y values.
+            A 2-column list.  The first column holds the x values and the
+            second column holds the y values.
         :rtype: list
         """
         # TODO Read :waveform:data
@@ -242,18 +241,26 @@ class Deoxys(bc.TCPIPInstrument):
         #           0x0001 clipped low
         #           0xFFFF clipped high
 
-        # Read actual data
-        # and discard the newline character
-        stream = self.read_binary()[:-1]
-
-        # Chop the stream into 16-bit elements
-        stream = [w for w in self.__chop16(stream)]
-
-        # Convert the stream into ``float``\ s
-        out = map(self.__half_to_float, stream)
-        # TODO Need to adjust these for special values (clipped, etc)
-        # TODO Need to adjust these according to preamble
+        # TODO Need to adjust waveform_x for special values (clipped, etc)
+        # TODO Need to adjust waveform_x according to preamble
+        # TODO Need to create waveform_y according to preamble
         # TODO Need to compose X and Y values
+        pass
+
+    def ask_waveform_data(self):
+        """A convenience function to query the waveform preamble and waveform
+        data in one call.  Additionally, it also composes the (x,y) data list.
+
+        :returns out:
+            A 2-column list.  The first column holds the x values and the
+            second column holds the y values.
+        :rtype: list
+        """
+        self.write(':waveform:preamble?')
+        waveform_preamble = self.read_preamble()
+        self.write(':waveform:data?')
+        waveform_y = self.read_ieee754()
+        out = self.compose_waveform_xy(waveform_y, waveform_preamble)
         return out
 
 class Genesect(bc.TCPIPInstrument):
