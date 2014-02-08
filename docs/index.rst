@@ -21,7 +21,7 @@ Quick start
 
     kyurem = mi.Kyurem()
     kyurem.write('*IDN?')
-    print kyurem.read()
+    print kyurem.read_ascii()
 
 Contents
 ========
