@@ -162,6 +162,8 @@ class Instrument(object):
         :param str scpi_string:
             A valid SCPI command. See the instrument's SCPI command reference.
         """
+        if scpi_string.strip()[-1] != '?':
+            raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
         self.write(scpi_string)
         self.write('*OPC')
         return self.read_ascii()
@@ -173,6 +175,8 @@ class Instrument(object):
         :param str scpi_string:
             A valid SCPI command. See the instrument's SCPI command reference.
         """
+        if scpi_string.strip()[-1] != '?':
+            raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
         self.write(scpi_string)
         self.write('*OPC')
         return self.read_binary()
@@ -184,6 +188,8 @@ class Instrument(object):
         :param str scpi_string:
             A valid SCPI command. See the instrument's SCPI command reference.
         """
+        if scpi_string.strip()[-1] != '?':
+            raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
         self.write(scpi_string)
         self.write('*OPC')
         return self.read_ieee754()
