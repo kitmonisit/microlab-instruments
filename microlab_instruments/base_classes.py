@@ -160,7 +160,7 @@ class Instrument(object):
         :meth:`.read_ascii` consecutively.
 
         :param str scpi_string:
-            A valid SCPI command. See the instrument's SCPI command reference.
+            A valid SCPI query command. See the instrument's SCPI command reference.
         """
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
@@ -173,7 +173,7 @@ class Instrument(object):
         :meth:`.read_binary` consecutively.
 
         :param str scpi_string:
-            A valid SCPI command. See the instrument's SCPI command reference.
+            A valid SCPI query command. See the instrument's SCPI command reference.
         """
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
@@ -186,7 +186,7 @@ class Instrument(object):
         :meth:`.read_ieee754` consecutively.
 
         :param str scpi_string:
-            A valid SCPI command. See the instrument's SCPI command reference.
+            A valid SCPI query command. See the instrument's SCPI command reference.
         """
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
