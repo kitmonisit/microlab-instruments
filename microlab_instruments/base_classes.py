@@ -49,8 +49,8 @@ class Instrument(object):
         return expected_size
 
     def read_ascii(self, bufsize=4096):
-        """Read ASCII response from instrument in chunks of ``bufsize``
-        until a ``\\n`` is encounterd.
+        """Read ASCII response from instrument in chunks of ``bufsize`` bytes
+        until a ``\\n`` is encountered.
 
         :param int bufsize:
             Defaults to 4096 bytes.  Expected size in bytes of the response
@@ -70,11 +70,34 @@ class Instrument(object):
         return out
 
     def read_binary(self):
-        """Read raw binary data from instrument.
+        """Read raw binary data from instrument.  It is the developer's
+        responsiblity to make sense of it.
 
         :returns out:
-            Response from the instrument.
+            Response from the instrument.  This is just a string of binary
+            code.
         :rtype: str
+
+        A typical use case is obtaining a screenshot of the instrument panel.
+        The following code is for the Agilent B2902A Precision Source Measure
+        Unit, nicknamed 'Yveltal'.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            yveltal = mi.Yveltal()
+            yveltal.write(':DISP:ENAB ON')
+            yveltal.write(':DISP:VIEW GRAP')
+            yveltal.write(':HCOP:SDUM:FORM JPG')
+            yveltal.ask('*OPC?')
+            yveltal.write(':HCOP:SDUM:DATA?')
+            image_data = yveltal.read_binary()
+
+            file_handle = open('screendump.jpg', 'wb')
+            file_handle.write(image_data)
+            file_handle.close()
+
         """
         expected_size = self._get_expected_bytes()
 
@@ -87,7 +110,10 @@ class Instrument(object):
         return out
 
     def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
+        """A convenience function to read binary data known to be formatted in
+        IEEE-754 floating-point.  Internally calls :meth:`.read_binary` and
+        automatically determines half-, single-, or double-precision based on
+        the instrument's settings.
 
         :returns out:
             A list of floating-point numbers.
@@ -355,7 +381,11 @@ class GPIBInstrument(Instrument):
         return gpib.write(self._device, s)
 
     def read(self, bufsize=4096):
-        """Read ``bufsize`` bytes from instrument.
+        """Read ``bufsize`` bytes from instrument.  Using this low-level
+        function, there is no way to ensure that all the response data has been
+        retrieved, or to make sense of binary data.  It is strongly recommended
+        to use :meth:`.read_ascii`\ , :meth:`.read_binary`\ , or
+        :meth:`.read_ieee754`\ .
 
         :param int bufsize:
             Defaults to 4096 bytes.  Expected size in bytes of the response
@@ -403,7 +433,11 @@ class TCPIPInstrument(Instrument):
         return self._socket.send(s)
 
     def read(self, bufsize=4096):
-        """Read ``bufsize`` bytes from instrument.
+        """Read ``bufsize`` bytes from instrument.  Using this low-level
+        function, there is no way to ensure that all the response data has been
+        retrieved, or to make sense of binary data.  It is strongly recommended
+        to use :meth:`.read_ascii`\ , :meth:`.read_binary`\ , or
+        :meth:`.read_ieee754`\ .
 
         :param int bufsize:
             Defaults to 4096 bytes.  Expected size in bytes of the response
