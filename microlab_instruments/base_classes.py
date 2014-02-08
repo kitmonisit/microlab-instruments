@@ -36,7 +36,6 @@ class Instrument(object):
         the response stream will look like this::
 
         #41097
-
         """
         # Read number of decimal digits to represent expected data size
         s = self.read(2)
@@ -53,8 +52,7 @@ class Instrument(object):
         until a ``\\n`` is encountered.
 
         :param int bufsize:
-            Defaults to 4096 bytes.  Expected size in bytes of the response
-            from the instrument.
+            Defaults to 4096 bytes.  Size of consecutive chunks of data to be read.
 
         :returns out:
             Response from the instrument.
@@ -97,7 +95,6 @@ class Instrument(object):
             file_handle = open('screendump.jpg', 'wb')
             file_handle.write(image_data)
             file_handle.close()
-
         """
         expected_size = self._get_expected_bytes()
 
