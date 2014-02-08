@@ -49,7 +49,8 @@ class Instrument(object):
         return expected_size
 
     def read_ascii(self, bufsize=4096):
-        """Read ASCII response from instrument.
+        """Read ASCII response from instrument in chunks of ``bufsize``
+        until a ``\\n`` is encounterd.
 
         :param int bufsize:
             Defaults to 4096 bytes.  Expected size in bytes of the response
@@ -163,6 +164,7 @@ class Instrument(object):
 
 
 class AardvarkInstrument(object):
+
     #: These are the status codes used by :meth:`.i2c_write`\ ,
     #: :meth:`.i2c_read`\ , and :meth:`.i2c_write_read` when raising
     #: Exceptions.
@@ -179,12 +181,13 @@ class AardvarkInstrument(object):
     def __init__(self):
         """Initialize an Aardvark.
 
-        :raises Exception: Upon instantiation, SPI communication is tested. A
-        25-long *array* of bytes is sent twice to the Aardvark (and
-        subsequently to the FPGA).  After the second attempt, a response
-        identical to the *array* must be received.  If not, an Exception is
-        raised.  In this case, it may be likely that the FPGA did not respond
-        properly.
+        :raises Exception:
+            Upon instantiation, SPI communication is tested. A
+            25-long *array* of bytes is sent twice to the Aardvark (and
+            subsequently to the FPGA).  After the second attempt, a response
+            identical to the *array* must be received.  If not, an Exception is
+            raised.  In this case, it may be likely that the FPGA did not respond
+            properly.
         """
         port = aapy.aa_find_devices(1)[1][0]
         self.__device = aapy.aa_open(port)
