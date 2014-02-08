@@ -19,7 +19,7 @@ class Instrument(object):
         """Returns ``True`` if the most significant bit as at the right,
         ``False`` if the most significant bit is at the left.
         """
-        return self.ask(self.DATA['get_byte_order']) == self.DATA['byte_order_little']
+        return self.ask_ascii(self.DATA['get_byte_order']) == self.DATA['byte_order_little']
 
     def _get_expected_bytes(self):
         """Used by methods that expect fixed-length binary or IEEE-754 data.
@@ -90,7 +90,7 @@ class Instrument(object):
             yveltal.write(':DISP:ENAB ON')
             yveltal.write(':DISP:VIEW GRAP')
             yveltal.write(':HCOP:SDUM:FORM JPG')
-            yveltal.ask('*OPC?')
+            yveltal.ask_ascii('*OPC?')
             yveltal.write(':HCOP:SDUM:DATA?')
             image_data = yveltal.read_binary()
 
@@ -131,7 +131,7 @@ class Instrument(object):
                  'yveltal'):
 
             # Calculate number of floating point data points
-            precision = self.ask(self.DATA['get_data_format'])
+            precision = self.ask_ascii(self.DATA['get_data_format'])
 
             # one single-precision number is 4 bytes
             if precision == self.DATA['data_format_single']:
@@ -166,6 +166,7 @@ class Instrument(object):
             A valid SCPI command. See the instrument's SCPI command reference.
         """
         self.write(scpi_string)
+        self.write('*OPC')
         return self.read_ascii()
 
     def ask_binary(self, scpi_string):
@@ -176,6 +177,7 @@ class Instrument(object):
             A valid SCPI command. See the instrument's SCPI command reference.
         """
         self.write(scpi_string)
+        self.write('*OPC')
         return self.read_binary()
 
     def ask_ieee754(self, scpi_string):
@@ -186,6 +188,7 @@ class Instrument(object):
             A valid SCPI command. See the instrument's SCPI command reference.
         """
         self.write(scpi_string)
+        self.write('*OPC')
         return self.read_ieee754()
 
 
