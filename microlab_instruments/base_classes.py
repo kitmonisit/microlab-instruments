@@ -128,7 +128,8 @@ class Instrument(object):
                  'yveltal'):
 
             # Calculate number of floating point data points
-            precision = self.ask_ascii(self.DATA['get_data_format'])
+            # Query precision and discard newline character
+            precision = self.ask_ascii(self.DATA['get_data_format'])[:-1]
 
             # one single-precision number is 4 bytes
             if precision == self.DATA['data_format_single']:
@@ -136,7 +137,7 @@ class Instrument(object):
             # one double-precision number is 8 bytes
             elif precision == self.DATA['data_format_double']:
                 num_bytes = 8
-            n = len(stream)*8/num_bytes
+            n = len(stream)/num_bytes
 
             # Get byte order
             b = '<' if self._is_little_endian() else '>'
