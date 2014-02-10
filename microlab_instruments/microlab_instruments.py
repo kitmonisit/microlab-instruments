@@ -6,19 +6,19 @@ from struct import pack, unpack
 
 # GPIB Instruments
 ARCEUS   = {
-    'gpib_nickname'    : 'arceus',
+    'nickname'         : 'arceus',
     'name'             : 'Agilent 8753ES S-Parameter Network Analyzer',
     'get_byte_order'   : '',
     'byte_order_little': '',
     }
 MELOETTA = {
-    'gpib_nickname'    : 'meloetta',
+    'nickname'         : 'meloetta',
     'name'             : 'Hewlett-Packard 6623A System DC Power Supply',
     'get_byte_order'   : '',
     'byte_order_little': '',
     }
 XERNEAS  = {
-    'gpib_nickname'    : 'xerneas',
+    'nickname'         : 'xerneas',
     'name'             : 'Hewlett-Packard 4156A Precision Semiconductor Parameter Analyzer',
     'get_byte_order'   : '',
     'byte_order_little': '',
@@ -26,97 +26,109 @@ XERNEAS  = {
 
 # TCPIP Instruments
 DARKRAI  = {
-    'nickname'         : 'darkrai',
-    'name'             : 'Agilent N9020A MXA Signal Analyzer',
-    'socket'           : ('192.168.1.5', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'darkrai',
+    'name'              : 'Agilent N9020A MXA Signal Analyzer',
+    'socket'            : ('192.168.1.5', 5025),
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 DEOXYS   = {
-    'nickname'         : 'deoxys',
-    'name'             : 'Agilent InfiniiVision MSO7104A Mixed Signal Oscilloscope',
-    'socket'           : ('192.168.1.10', 5025),
-    'get_byte_order'   : ':waveform:byteorder?',
-    'byte_order_little': 'LSBF',
+    'nickname'          : 'deoxys',
+    'name'              : 'Agilent InfiniiVision MSO7104A Mixed Signal Oscilloscope',
+    'socket'            : ('192.168.1.10', 5025),
+    'get_byte_order'    : ':waveform:byteorder?',
+    'byte_order_little' : 'LSBF',
     }
 GENESECT = {
-    'nickname'         : 'genesect',
-    'name'             : 'Agilent B2962A Power Source',
-    'socket'           : ('192.168.1.9', 5025),
-    'get_byte_order'   : ':format:border?',
-    'byte_order_little': 'NORM',
+    'nickname'          : 'genesect',
+    'name'              : 'Agilent B2962A Power Source',
+    'socket'            : ('192.168.1.9', 5025),
+    'get_byte_order'    : ':format:border?',
+    'byte_order_little' : 'NORM',
+    'get_data_format'   : ':format:data?',
+    'data_format_single': 'REAL,32',
+    'data_format_double': 'REAL,64',
     }
 GIRATINA = {
-    'nickname'         : 'giratina',
-    'name'             : 'Agilent B2962A Power Source',
-    'socket'           : ('192.168.1.8', 5025),
-    'get_byte_order'   : ':format:border?',
-    'byte_order_little': 'NORM',
+    'nickname'          : 'giratina',
+    'name'              : 'Agilent B2962A Power Source',
+    'socket'            : ('192.168.1.8', 5025),
+    'get_byte_order'    : ':format:border?',
+    'byte_order_little' : 'NORM',
+    'get_data_format'   : ':format:data?',
+    'data_format_single': 'REAL,32',
+    'data_format_double': 'REAL,64',
     }
 HEATRAN  = {
-    'nickname'         : 'heatran',
-    'name'             : 'Agilent 16803A Logic Analyzer',
-    'socket'           : ('192.168.1.11', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'heatran',
+    'name'              : 'Agilent 16803A Logic Analyzer',
+    'socket'            : ('192.168.1.11', 5025),
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 HO_OH    = {
-    'nickname'         : 'ho_oh',
-    'name'             : 'Agilent N5182A MXG Vector Signal Generator',
-    'socket'           : ('192.168.1.4', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'ho_oh',
+    'name'              : 'Agilent N5182A MXG Vector Signal Generator',
+    'socket'            : ('192.168.1.4', 5025),
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 KYUREM   = {
-    'nickname'         : 'kyurem',
-    'name'             : 'Agilent N5183A MXG Analog Signal Generator',
-    'socket'           : ('192.168.1.3', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'kyurem',
+    'name'              : 'Agilent N5183A MXG Analog Signal Generator',
+    'socket'            : ('192.168.1.3', 5025),
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 RAYQUAZA = {
-    'nickname'         : 'rayquaza',
-    'name'             : 'Agilent E4443A PSA Series Spectrum Analyzer',
-    'socket'           : ('192.168.1.2', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'rayquaza',
+    'name'              : 'Agilent E4443A PSA Series Spectrum Analyzer',
+    'socket'            : ('192.168.1.2', 5025),
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 YVELTAL  = {
-    'nickname'         : 'yveltal',
-    'name'             : 'Agilent B2902A Precision Source/Measure Unit',
-    'socket'           : ('192.168.1.7', 5025),
-    'get_byte_order'   : ':format:border?',
-    'byte_order_little': 'NORM',
+    'nickname'          : 'yveltal',
+    'name'              : 'Agilent B2902A Precision Source/Measure Unit',
+    'socket'            : ('192.168.1.7', 5025),
+    'get_byte_order'    : ':format:border?',
+    'byte_order_little' : 'NORM',
+    'get_data_format'   : ':format:data?',
+    'data_format_single': 'REAL,32',
+    'data_format_double': 'REAL,64',
     }
 ZYGARDE  = {
-    'nickname'         : 'zygarde',
-    'name'             : 'Agilent E5071C ENA Series Network Analyzer',
-    'socket'           : ('192.168.1.6', 5025),
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'zygarde',
+    'name'              : 'Agilent E5071C ENA Series Network Analyzer',
+    'socket'            : ('192.168.1.6', 5025),
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
-
 
 
 class Arceus(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = ARCEUS
-        super(Arceus, self).__init__(nickname=self.DATA['gpib_nickname'])
+        super(Arceus, self).__init__(nickname=self.DATA['nickname'])
+
 
 class Meloetta(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = MELOETTA
-        super(Meloetta, self).__init__(nickname=self.DATA['gpib_nickname'])
+        super(Meloetta, self).__init__(nickname=self.DATA['nickname'])
+
 
 class Xerneas(bc.GPIBInstrument):
     def __init__(self):
         self.DATA = XERNEAS
-        super(Xerneas, self).__init__(nickname=self.DATA['gpib_nickname'])
+        super(Xerneas, self).__init__(nickname=self.DATA['nickname'])
+
 
 class Darkrai(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = DARKRAI
         super(Darkrai, self).__init__(socket_pair=self.DATA['socket'])
+
 
 class Deoxys(bc.TCPIPInstrument):
     def __init__(self):
@@ -126,7 +138,7 @@ class Deoxys(bc.TCPIPInstrument):
         self.write(':waveform:format word')
         self.write('*OPC')
 
-    def __chop16(self, s):
+    def _chop16(self, s):
         """A generator that, given a string, yields its 16-bit slices.
 
         :param str s:
@@ -143,7 +155,7 @@ class Deoxys(bc.TCPIPInstrument):
             yield k
             n += 2
 
-    def __half_to_float(self, half):
+    def _half_to_float(self, half):
         """Converts half-precision floating-point (16-bit) binary data to
         Python ``float``\ .
 
@@ -191,15 +203,13 @@ class Deoxys(bc.TCPIPInstrument):
         out = unpack('f', st)
         return out
 
-    def ask_waveform_data(self):
-        self.write(':waveform:preamble?')
-        self.read_preamble()
-        self.write(':waveform:data?')
-        self.read_ieee754()
-        pass
-
     def read_preamble(self):
-        pass
+        """Read the waveform preamble from Deoxys.  It contains the following
+        metadata about the waveform data:
+
+        :returns out:
+        :rtype: dict
+        """
         # TODO Combine write, preamble and data in one function
         # TODO Read :waveform:preamble
         #           format WORD this is two bytes for each data point
@@ -213,14 +223,15 @@ class Deoxys(bc.TCPIPInstrument):
         #           yorigin
         #           yreference
         # TODO Read :save:waveform:start I do not know how to transfer a file
+        pass
 
-    def read_word(self):
-        """Read half-precision floating-point data from instrument.  Call this
-        method after calling ``write(':waveform:data?')``.
+    def compose_waveform_xy(self, waveform_y, waveform_preamble):
+        """Compose the (x,y) data list according to the y data and preamble
+        obtained from the instrument.
 
         :returns out:
-            A two-column list of floating-point numbers, where the first column
-            contains the X values and the second column contains the Y values.
+            A 2-column list.  The first column holds the x values and the
+            second column holds the y values.
         :rtype: list
         """
         # TODO Read :waveform:data
@@ -232,25 +243,29 @@ class Deoxys(bc.TCPIPInstrument):
         #           0x0000 hole
         #           0x0001 clipped low
         #           0xFFFF clipped high
-        expected_size = self._get_expected_bytes()
 
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Chop the stream into 16-bit elements
-        stream = [w for w in self.__chop16(stream)]
-
-        # Convert the stream into ``float``\ s
-        out = map(self.__half_to_float, stream)
-        # TODO Need to adjust these for special values (clipped, etc)
-        # TODO Need to adjust these according to preamble
+        # TODO Need to adjust waveform_x for special values (clipped, etc)
+        # TODO Need to adjust waveform_x according to preamble
+        # TODO Need to create waveform_y according to preamble
         # TODO Need to compose X and Y values
+        pass
+
+    def ask_waveform_data(self):
+        """A convenience function to query the waveform preamble and waveform
+        data in one call.  Additionally, it also composes the (x,y) data list.
+
+        :returns out:
+            A 2-column list.  The first column holds the x values and the
+            second column holds the y values.
+        :rtype: list
+        """
+        self.write(':waveform:preamble?')
+        waveform_preamble = self.read_preamble()
+        self.write(':waveform:data?')
+        waveform_y = self.read_ieee754()
+        out = self.compose_waveform_xy(waveform_y, waveform_preamble)
         return out
+
 
 class Genesect(bc.TCPIPInstrument):
     def __init__(self):
@@ -259,40 +274,6 @@ class Genesect(bc.TCPIPInstrument):
         self.write(':format:data real,32')
         self.write('*OPC')
 
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
-
-        :returns out:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')
-        if precision == 'REAL,32':
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == 'REAL,64':
-            num_bytes = 8
-        n = (expected_size - 1)/num_bytes
-
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
 
 class Giratina(bc.TCPIPInstrument):
     def __init__(self):
@@ -301,60 +282,30 @@ class Giratina(bc.TCPIPInstrument):
         self.write(':format:data real,32')
         self.write('*OPC')
 
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
-
-        :returns stream:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')
-        if precision == 'REAL,32':
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == 'REAL,64':
-            num_bytes = 8
-        n = (expected_size - 1)/num_bytes
-
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
 
 class Heatran(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = HEATRAN
         super(Heatran, self).__init__(socket_pair=self.DATA['socket'])
 
+
 class Ho_oh(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = HO_OH
         super(Ho_oh, self).__init__(socket_pair=self.DATA['socket'])
+
 
 class Kyurem(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = KYUREM
         super(Kyurem, self).__init__(socket_pair=self.DATA['socket'])
 
+
 class Rayquaza(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = RAYQUAZA
         super(Rayquaza, self).__init__(socket_pair=self.DATA['socket'])
+
 
 class Yveltal(bc.TCPIPInstrument):
     def __init__(self):
@@ -363,42 +314,10 @@ class Yveltal(bc.TCPIPInstrument):
         self.write(':format:data real,32')
         self.write('*OPC')
 
-    def read_ieee754(self):
-        """Read IEEE-754 floating-point data from instrument.
-
-        :returns stream:
-            A list of floating-point numbers.
-        :rtype: list
-        """
-        expected_size = self._get_expected_bytes()
-
-        # Read actual data
-        stream = ''
-        while len(stream) < expected_size:
-            stream += self._socket.recv(expected_size)
-
-        # Discard the newline character
-        stream = stream[:-1]
-
-        # Calculate number of floating point data points
-        # 1 single-precision number is 4 bytes
-        precision = self.ask(':format:data?')[:-1] # discard newline
-        if precision == 'REAL,32':
-            num_bytes = 4
-        # 1 double-precision number is 8 bytes
-        elif precision == 'REAL,64':
-            num_bytes = 8
-        n = (expected_size - 1)/num_bytes
-
-        # Get byte order
-        b = '<' if self._is_little_endian() else '>'
-
-        # Convert the binary data to Python ``float``s
-        fmt = '{0}{1}f'.format(b, n)
-        out = list(unpack(fmt, stream))
-        return out
 
 class Zygarde(bc.TCPIPInstrument):
     def __init__(self):
         self.DATA = ZYGARDE
         super(Zygarde, self).__init__(socket_pair=self.DATA['socket'])
+
+
