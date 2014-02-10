@@ -47,6 +47,42 @@ class SCPIInstrument(object):
         expected_size = int(s) + 1
         return expected_size
 
+    def configure(self, config_file):
+        """Reads from a text file containing valid SCPI commands separated by
+        newlines to configure the instrument.  Only program commands are
+        allowed.  Configures the instrument by sending those commands
+        consecutively.  Automatically sends an *OPC? command to await pending
+        operations.  Prints out those commands to standard output.
+
+        Text written after a '#' character are considered comments.
+
+        Commands in the configuration file are assumed to be valid for the
+        instrument.
+
+        :param str config_file:
+            The filename of the configuration file.
+
+        :raises Exception:
+            If any of the SCPI commands contain a '?' (i.e. are query commands)
+        """
+        fd = open(config_file, 'r')
+        raw = fd.readlines()
+        commands = []
+        for r in raw:
+            # Discard comments and trim whitespace
+            if r.strip().startswith('#') or bool(r.strip()) == False:
+                continue
+            else:
+                comm = r.split('#')[0].strip()
+                if '?' in comm:
+                    raise Exception, 'Query commands not allowed.'
+                else:
+                    commands.append(comm)
+        for c in commands:
+            print c
+            self.write(c)
+        self.ask_ascii('*OPC?')
+
     def read_ascii(self, bufsize=4096):
         """Read ASCII response from instrument in chunks of ``bufsize`` bytes
         until a ``\\n`` is encountered.
