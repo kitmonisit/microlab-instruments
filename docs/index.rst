@@ -23,6 +23,17 @@ Quick start
     kyurem.write('*IDN?')
     print kyurem.read_ascii()
 
+
+Using the Verilog code
+======================
+
+The included Verilog code is used to program the Xilinx Virtex-5 FPGA so that
+it can communicate in SPI and I2C protocol with the Aardvark as it is
+configured in this library.
+
+See the source code for the Aardvark protocol configuration of SPI and I2C.
+
+
 Contents
 ========
 
