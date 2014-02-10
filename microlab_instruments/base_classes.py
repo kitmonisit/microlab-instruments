@@ -337,7 +337,6 @@ class TCPIPInstrument(SCPIInstrument):
 
 
 class AardvarkInstrument(object):
-
     #: These are the status codes used by :meth:`.i2c_write`\ ,
     #: :meth:`.i2c_read`\ , and :meth:`.i2c_write_read` when raising
     #: Exceptions.
@@ -505,3 +504,17 @@ class SerialInstrument(object):
     def __del__(self):
         self.__serial.close()
 
+
+class I2CMuxInstrument(object):
+    """An abstraction layer for the I2C multiplexer chip.
+    """
+    def __init__(self):
+        pass
+
+
+class TempSensorInstrument(object):
+    """An abstraction layer for the Sensirion ... temperature sensor with an
+    I2C communication interface.
+    """
+    def __init__(self):
+        pass
