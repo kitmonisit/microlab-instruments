@@ -134,16 +134,18 @@ class Instrument(object):
             # one single-precision number is 4 bytes
             if precision == self.DATA['data_format_single']:
                 num_bytes = 4
+                fmt_char = 'f'
             # one double-precision number is 8 bytes
             elif precision == self.DATA['data_format_double']:
                 num_bytes = 8
+                fmt_char = 'd'
             n = len(stream)/num_bytes
 
             # Get byte order
             b = '<' if self._is_little_endian() else '>'
 
             # Convert the binary data to Python ``float``s
-            fmt = '{0}{1}f'.format(b, n)
+            fmt = '{0}{1}{2}'.format(b, n, fmt_char)
             out = list(unpack(fmt, stream))
             return out
         # half-precision
