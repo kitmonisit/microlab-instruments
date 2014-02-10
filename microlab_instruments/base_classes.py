@@ -14,7 +14,7 @@ from random import randint
 from array import array
 from struct import unpack
 
-class Instrument(object):
+class SCPIInstrument(object):
     def _is_little_endian(self):
         """Returns ``True`` if the most significant bit as at the right,
         ``False`` if the most significant bit is at the left.
@@ -198,6 +198,108 @@ class Instrument(object):
         return self.read_ieee754()
 
 
+class GPIBInstrument(SCPIInstrument):
+    def __init__(self, nickname):
+        """Initialize a GPIB instrument
+
+        :param str nickname:
+            A nickname associated with a GPIB primary address and defined in
+            ``/etc/gpib.conf``.
+        """
+        self.__device = gpib.find(nickname)
+        self.reset()
+
+    def __del__(self):
+        """Close the GPIB conection.
+        """
+        gpib.close(self.__device)
+
+    def reset(self):
+        """Reset the GPIB instrument.
+        """
+        gpib.clear(self.__device)
+        self.write('*RST')
+
+    def write(self, scpi_string):
+        """Write SCPI command to the instrument.  The end-of-string character
+        (for example, ``\\n``) is automatically appended.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
+        """
+        s = ''.join([scpi_string, '\n'])
+        return gpib.write(self._device, s)
+
+    def read(self, bufsize=4096):
+        """Read ``bufsize`` bytes from instrument.  Using this low-level
+        function, there is no way to ensure that all the response data has been
+        retrieved, or to make sense of binary data.  It is strongly recommended
+        to use :meth:`.read_ascii`\ , :meth:`.read_binary`\ , or
+        :meth:`.read_ieee754`\ .
+
+        :param int bufsize:
+            Defaults to 4096 bytes.  Expected size in bytes of the response
+            from the instrument.
+
+        :returns out:
+            Response from the instrument.
+        :rtype: str
+        """
+        return gpib.read(self._device, bufsize)
+
+
+class TCPIPInstrument(SCPIInstrument):
+    def __init__(self, socket_pair):
+        """Initialize TCP/IP instrument.
+
+        :param tuple socket_pair:
+            A 2-tuple of the form ``('192.168.1.2', 5025)``.
+        """
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.connect(socket_pair)
+        self._socket.settimeout(30)
+        self.reset()
+
+    def __del__(self):
+        """Close the socket connection properly.
+        """
+        self._socket.shutdown(socket.SHUT_RDWR)
+        self._socket.close()
+
+    def reset(self):
+        """Reset the instrument.
+        """
+        self.write('*CLS')
+        self.write('*RST')
+
+    def write(self, scpi_string):
+        """Write SCPI command to the instrument.  The end-of-string character
+        (for example, ``\\n``) is automatically appended.
+
+        :param str scpi_string:
+            A valid SCPI command. See the instrument's SCPI command reference.
+        """
+        s = ''.join([scpi_string, '\n'])
+        return self._socket.send(s)
+
+    def read(self, bufsize=4096):
+        """Read ``bufsize`` bytes from instrument.  Using this low-level
+        function, there is no way to ensure that all the response data has been
+        retrieved, or to make sense of binary data.  It is strongly recommended
+        to use :meth:`.read_ascii`\ , :meth:`.read_binary`\ , or
+        :meth:`.read_ieee754`\ .
+
+        :param int bufsize:
+            Defaults to 4096 bytes.  Expected size in bytes of the response
+            from the instrument.
+
+        :returns out:
+            Response from the instrument.
+        :rtype: str
+        """
+        return self._socket.recv(bufsize)
+
+
 class AardvarkInstrument(object):
 
     #: These are the status codes used by :meth:`.i2c_write`\ ,
@@ -358,108 +460,7 @@ class AardvarkInstrument(object):
         return out
 
 
-class GPIBInstrument(Instrument):
-    def __init__(self, nickname):
-        """Initialize a GPIB instrument
-
-        :param str nickname:
-            A nickname associated with a GPIB primary address and defined in
-            ``/etc/gpib.conf``.
-        """
-        self.__device = gpib.find(nickname)
-        self.reset()
-
-    def __del__(self):
-        """Close the GPIB conection.
-        """
-        gpib.close(self.__device)
-
-    def reset(self):
-        """Reset the GPIB instrument.
-        """
-        gpib.clear(self.__device)
-
-    def write(self, scpi_string):
-        """Write SCPI command to the instrument.  The end-of-string character
-        (for example, ``\\n``) is automatically appended.
-
-        :param str scpi_string:
-            A valid SCPI command. See the instrument's SCPI command reference.
-        """
-        s = ''.join([scpi_string, '\n'])
-        return gpib.write(self._device, s)
-
-    def read(self, bufsize=4096):
-        """Read ``bufsize`` bytes from instrument.  Using this low-level
-        function, there is no way to ensure that all the response data has been
-        retrieved, or to make sense of binary data.  It is strongly recommended
-        to use :meth:`.read_ascii`\ , :meth:`.read_binary`\ , or
-        :meth:`.read_ieee754`\ .
-
-        :param int bufsize:
-            Defaults to 4096 bytes.  Expected size in bytes of the response
-            from the instrument.
-
-        :returns out:
-            Response from the instrument.
-        :rtype: str
-        """
-        return gpib.read(self._device, bufsize)
-
-
-class TCPIPInstrument(Instrument):
-    def __init__(self, socket_pair):
-        """Initialize TCP/IP instrument.
-
-        :param tuple socket_pair:
-            A 2-tuple of the form ``('192.168.1.2', 5025)``.
-        """
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.connect(socket_pair)
-        self._socket.settimeout(30)
-        self.reset()
-
-    def __del__(self):
-        """Close the socket connection properly.
-        """
-        self._socket.shutdown(socket.SHUT_RDWR)
-        self._socket.close()
-
-    def reset(self):
-        """Reset the instrument.
-        """
-        self.write('*CLS')
-        self.write('*RST')
-
-    def write(self, scpi_string):
-        """Write SCPI command to the instrument.  The end-of-string character
-        (for example, ``\\n``) is automatically appended.
-
-        :param str scpi_string:
-            A valid SCPI command. See the instrument's SCPI command reference.
-        """
-        s = ''.join([scpi_string, '\n'])
-        return self._socket.send(s)
-
-    def read(self, bufsize=4096):
-        """Read ``bufsize`` bytes from instrument.  Using this low-level
-        function, there is no way to ensure that all the response data has been
-        retrieved, or to make sense of binary data.  It is strongly recommended
-        to use :meth:`.read_ascii`\ , :meth:`.read_binary`\ , or
-        :meth:`.read_ieee754`\ .
-
-        :param int bufsize:
-            Defaults to 4096 bytes.  Expected size in bytes of the response
-            from the instrument.
-
-        :returns out:
-            Response from the instrument.
-        :rtype: str
-        """
-        return self._socket.recv(bufsize)
-
-
-class SerialInstrument(Instrument):
+class SerialInstrument(object):
     def __init__(self, device_port):
         """Initialize an RS-232 instrument.
         """
