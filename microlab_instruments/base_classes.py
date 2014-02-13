@@ -325,6 +325,15 @@ class TCPIPInstrument(SCPIInstrument):
             A valid SCPI command. See the instrument's SCPI command reference.
         """
         s = ''.join([scpi_string, '\n'])
+        # TODO Make sure the whole string is sent
+        #total_bytes = len(s)
+        #bytes_sent = 0
+        #while bytes_sent < total_bytes:
+            #sent = self._socket.send(s[bytes_sent:])
+            #if sent == 0:
+                #raise Exception, 'Socket connection broken'
+            #bytes_sent += sent
+        #return bytes_sent
         return self._socket.send(s)
 
     def read(self, bufsize=4096):
