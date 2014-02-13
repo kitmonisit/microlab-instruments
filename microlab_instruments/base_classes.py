@@ -200,6 +200,9 @@ class SCPIInstrument(object):
 
         :param str scpi_string:
             A valid SCPI query command. See the instrument's SCPI command reference.
+
+        :raises Exception:
+            If the SCPI command does not end with a '?' (i.e. not a query command)
         """
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
@@ -213,6 +216,9 @@ class SCPIInstrument(object):
 
         :param str scpi_string:
             A valid SCPI query command. See the instrument's SCPI command reference.
+
+        :raises Exception:
+            If the SCPI command does not end with a '?' (i.e. not a query command)
         """
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
@@ -226,6 +232,9 @@ class SCPIInstrument(object):
 
         :param str scpi_string:
             A valid SCPI query command. See the instrument's SCPI command reference.
+
+        :raises Exception:
+            If the SCPI command does not end with a '?' (i.e. not a query command)
         """
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
