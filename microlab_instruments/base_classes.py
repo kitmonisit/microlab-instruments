@@ -10,6 +10,7 @@ import aardvark_py as aapy
 import gpib
 import serial
 import socket
+import time
 from random import randint
 from array import array
 from struct import unpack
@@ -375,7 +376,7 @@ class AardvarkInstrument(object):
         # SPI configuration
         aapy.aa_spi_bitrate(self.__device, 1000)
         aapy.aa_spi_configure(self.__device, aapy.AA_SPI_POL_RISING_FALLING, aapy.AA_SPI_PHASE_SAMPLE_SETUP, aapy.AA_SPI_BITORDER_MSB)
-        self.__spi_test()
+        #self.__spi_test()
 
     def __del__(self):
         aapy.aa_close(self.__device)
@@ -513,8 +514,49 @@ class I2CMuxInstrument(object):
 
 
 class TempSensorInstrument(object):
-    """An abstraction layer for the Sensirion ... temperature sensor with an
+    """An abstraction layer for the Sensirion STS21 temperature sensor with an
     I2C communication interface.
     """
-    def __init__(self):
-        pass
+    def __init__(self, nickname, aardvark):
+        """Initialize a Sensirion STS21 temperature sensor.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+        """
+        self.__aardvark = aardvark
+        self.__address = self.DATA['address']
+
+        # TODO Use mux_address to configure the I2CMuxInstrument
+        self.__mux_address = self.DATA['mux_address']
+
+    def read_temp(self):
+        """Read measured temperature data
+
+        :returns out:
+            Temperature in degress Celsius
+        :rtype: float
+        """
+
+        # Instruct sensor to start measurement
+        BYTECODE = 0xF3
+        self.__aardvark.i2c_write(self.__address, BYTECODE)
+
+        # Wait 2 seconds
+        time.sleep(2)
+
+        # Read 3 bytes
+        BUFSIZE = 3
+        ret = self.__aardvark.i2c_read(self.__address, BUFSIZE)
+
+        # Status bits
+        status = bin(ret[1])[-2:]
+
+        # Checksum bits
+        checksum = '{0:02X}'.format(ret[2])
+
+        # Parse data
+        data = ((ret[0] << 8) + ((ret[1] >> 2) << 2))
+        temp = -46.85 + 175.72 * (float(data) / 2**16)
+
+        return temp
+

@@ -18,6 +18,8 @@ from microlab_instruments import \
     Kyurem, \
     Rayquaza, \
     Yveltal, \
-    Zygarde
+    Zygarde, \
+    Traxex, \
+    Xin
 from base_classes import AardvarkInstrument as Aardvark
 

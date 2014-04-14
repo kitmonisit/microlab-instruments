@@ -4,6 +4,20 @@
 import base_classes as bc
 from struct import pack, unpack
 
+# I2C Instruments
+TRAXEX   = {
+    'nickname'         : 'traxex',
+    'name'             : 'Sensirion STS21 Temperature Sensor',
+    'address'          : 0x4A,
+    'mux_address'      : 0x04,
+    }
+XIN      = {
+    'nickname'         : 'xin',
+    'name'             : 'Sensirion STS21 Temperature Sensor',
+    'address'          : 0x4A,
+    'mux_address'      : 0x05,
+    }
+
 # GPIB Instruments
 ARCEUS   = {
     'nickname'         : 'arceus',
@@ -104,6 +118,44 @@ ZYGARDE  = {
     'get_byte_order'    : '',
     'byte_order_little' : '',
     }
+
+
+class Traxex(bc.TempSensorInstrument):
+    def __init__(self, aardvark):
+        """Initialize a Sensirion STS21 temperature sensor.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            traxex = mi.Traxex(aa)
+            print traxex.read_temp()
+        """
+        self.DATA = TRAXEX
+        super(Traxex, self).__init__(nickname=self.DATA['nickname'], aardvark=aardvark)
+
+
+class Xin(bc.TempSensorInstrument):
+    def __init__(self, aardvark):
+        """Initialize a Sensirion STS21 temperature sensor.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            xin = mi.Xin(aa)
+            print xin.read_temp()
+        """
+        self.DATA = XIN
+        super(Xin, self).__init__(nickname=self.DATA['nickname'], aardvark=aardvark)
 
 
 class Arceus(bc.GPIBInstrument):
