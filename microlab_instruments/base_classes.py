@@ -509,24 +509,36 @@ class SerialInstrument(object):
 class I2CMuxInstrument(object):
     """An abstraction layer for the I2C multiplexer chip.
     """
-    def __init__(self):
-        pass
+    def __init__(self, nickname, aardvark):
+        self.__aardvark = aardvark
+        self.__address = self.DATA['address']
+
+    def switch_to(self, slave_address):
+        """Setup the multiplexer to relay I2C commands to the device having
+        ``slave_address``
+
+        :param int slave_address:
+            The device to which the multiplexer will relay I2C commands.
+        """
+        self.__aardvark.i2c_write(self.__address, slave_address)
 
 
 class TempSensorInstrument(object):
     """An abstraction layer for the Sensirion STS21 temperature sensor with an
     I2C communication interface.
     """
-    def __init__(self, nickname, aardvark):
+    def __init__(self, nickname, aardvark, mux):
         """Initialize a Sensirion STS21 temperature sensor.
 
         :param Aardvark aardvark:
             An Aardvark object through which I2C commands are relayed.
+
+        :param I2CMuxInstrument mux:
+            The I2C multiplexer through which I2C commands are relayed.
         """
         self.__aardvark = aardvark
+        self.__mux = mux
         self.__address = self.DATA['address']
-
-        # TODO Use mux_address to configure the I2CMuxInstrument
         self.__mux_address = self.DATA['mux_address']
 
     def read_temp(self):
@@ -536,6 +548,8 @@ class TempSensorInstrument(object):
             Temperature in degress Celsius
         :rtype: float
         """
+        # Configure multiplexer
+        self.__mux.switch_to(self.__mux_address)
 
         # Instruct sensor to start measurement
         BYTECODE = 0xF3
@@ -558,5 +572,6 @@ class TempSensorInstrument(object):
         data = ((ret[0] << 8) + ((ret[1] >> 2) << 2))
         temp = -46.85 + 175.72 * (float(data) / 2**16)
 
+        # TODO Include timestamp
         return temp
 
