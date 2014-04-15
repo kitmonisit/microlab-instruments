@@ -139,7 +139,7 @@ class Chen(bc.I2CMuxInstrument):
             chen = mi.Chen(aa)
         """
         self.DATA = CHEN
-        super(Chen, self).__init__(nickname=self.DATA['nickname'], aardvark=aardvark)
+        super(Chen, self).__init__(aardvark=aardvark)
 
 
 class Traxex(bc.TempSensorInstrument):
@@ -158,7 +158,7 @@ class Traxex(bc.TempSensorInstrument):
             print traxex.read_temp()
         """
         self.DATA = TRAXEX
-        super(Traxex, self).__init__(nickname=self.DATA['nickname'], aardvark=aardvark, mux=mux)
+        super(Traxex, self).__init__(aardvark=aardvark, mux=mux)
 
 
 class Xin(bc.TempSensorInstrument):
@@ -177,7 +177,7 @@ class Xin(bc.TempSensorInstrument):
             print xin.read_temp()
         """
         self.DATA = XIN
-        super(Xin, self).__init__(nickname=self.DATA['nickname'], aardvark=aardvark, mux=mux)
+        super(Xin, self).__init__(aardvark=aardvark, mux=mux)
 
 
 class Arceus(bc.GPIBInstrument):

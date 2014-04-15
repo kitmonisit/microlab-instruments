@@ -509,7 +509,7 @@ class SerialInstrument(object):
 class I2CMuxInstrument(object):
     """An abstraction layer for the I2C multiplexer chip.
     """
-    def __init__(self, nickname, aardvark):
+    def __init__(self, aardvark):
         self.__aardvark = aardvark
         self.__address = self.DATA['address']
 
@@ -527,7 +527,7 @@ class TempSensorInstrument(object):
     """An abstraction layer for the Sensirion STS21 temperature sensor with an
     I2C communication interface.
     """
-    def __init__(self, nickname, aardvark, mux):
+    def __init__(self, aardvark, mux):
         """Initialize a Sensirion STS21 temperature sensor.
 
         :param Aardvark aardvark:
