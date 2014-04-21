@@ -51,8 +51,8 @@ class SCPIInstrument(object):
         """Reads from a text file containing valid SCPI commands separated by
         newlines to configure the instrument.  Only program commands are
         allowed.  Configures the instrument by sending those commands
-        consecutively.  Automatically sends an *OPC? command to await pending
-        operations.  Prints out those commands to standard output.
+        consecutively.  Automatically sends an ``*OPC?`` command to await
+        pending operations.  Prints out those commands to standard output.
 
         Text written after a '#' character are considered comments.
 
