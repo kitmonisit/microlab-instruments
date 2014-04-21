@@ -12,16 +12,16 @@ Quick start
 
 .. code-block:: bash
 
-    $ pip install microlab-instruments
+    $ pip install git+https://github.com/kitmonisit/microlab-instruments.git
     $ python
 
 .. code-block:: python
 
     import microlab_instruments as mi
 
-    kyurem = mi.Kyurem()
-    kyurem.write('*IDN?')
-    print kyurem.read_ascii()
+    giratina = mi.Giratina()
+    giratina.write('*IDN?')
+    print giratina.read_ascii()
 
 Contents
 ========

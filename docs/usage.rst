@@ -8,6 +8,6 @@ To use Microlab Instruments in a project
 
     import microlab_instruments as mi
 
-    kyurem = mi.Kyurem()
-    kyurem.write('*IDN?')
-    print kyurem.read()
+    giratina = mi.Giratina()
+    giratina.write('*IDN?')
+    print giratina.read_ascii()
