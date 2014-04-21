@@ -14,6 +14,15 @@
 
 import sys, os
 
+# Hacks
+# Taken from http://stackoverflow.com/questions/15889621/sphinx-how-to-exclude-imports-in-automodule
+import mock
+
+MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'aardvark_py', 'serial', 'gpib']
+for module_name in MOCK_MODULES:
+    sys.modules[module_name] = mock.Mock()
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -276,3 +285,4 @@ autoclass_content = 'both'
 
 #def setup(app):
     #app.connect('autodoc-skip-member', skip_I2C_STATUS_CODES)
+
