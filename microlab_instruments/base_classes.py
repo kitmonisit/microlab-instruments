@@ -513,19 +513,19 @@ class I2CMuxInstrument(object):
         self.__aardvark = aardvark
         self.__address = self.DATA['address']
 
-    def switch_to(self, slave_address):
+    def switch_to(self, mux_slave_address):
         """Setup the multiplexer to relay I2C commands to the device having
-        ``slave_address``
+        ``mux_slave_address``
 
         :param int slave_address:
             The device to which the multiplexer will relay I2C commands.
         """
-        self.__aardvark.i2c_write(self.__address, slave_address)
+        self.__aardvark.i2c_write(self.__address, mux_slave_address)
 
 
 class TempSensorInstrument(object):
-    """An abstraction layer for the Sensirion STS21 temperature sensor with an
-    I2C communication interface.
+    """An abstraction layer for the Sensirion STS21 temperature sensor with
+    an I2C communication interface.
     """
     def __init__(self, aardvark, mux):
         """Initialize a Sensirion STS21 temperature sensor.
@@ -542,7 +542,7 @@ class TempSensorInstrument(object):
         self.__mux_address = self.DATA['mux_address']
 
     def read_temp(self):
-        """Read measured temperature data
+        """Read measured temperature data.
 
         :returns out:
             Temperature in degress Celsius
@@ -577,26 +577,39 @@ class TempSensorInstrument(object):
 
 
 class FPGAInstrument(object):
-    """An abstraction layer for the FPGA
+    """An abstraction layer for the FPGA.
     """
     def __init__(self, aardvark):
         self.__aardvark = aardvark
-        self.__address = 0x55
+        self.__address = self.DATA['address']
 
-    def __write_command(self, bytecode):
-        self.__aardvark.i2c_write(self.__address, bytecode)
+    def __write_command(self, register):
+        self.__aardvark.i2c_write(self.__address, register)
 
     def __write_payload(self, payload):
         self.__aardvark.i2c_write(self.__address, payload)
 
     def __read(self):
-        return self.__aardvark.i2c_read(self.__address, 1)
+        bufsize = 1
+        return self.__aardvark.i2c_read(self.__address, bufsize)
 
-    def write(self, bytecode, payload):
-        self.__write_command(bytecode)
+    def write(self, register, payload):
+        """Write a 1-byte-long ``payload`` to a ``register`` address.
+
+        :param int payload:
+            The data to write.  Limited to 1 byte long.
+        :param int register:
+            The register address to write to.  Limited to 1 byte long.
+        """
+        self.__write_command(register)
         self.__write_payload(payload)
 
     def read(self, register):
+        """Read the contents of ``register``.
+
+        :param int register:
+            The register address to read.  Limited to 1 byte long.
+        """
         self.__write_command(register)
         return self.__read()
 

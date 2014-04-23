@@ -21,6 +21,7 @@ from microlab_instruments import \
     Zygarde, \
     Chen, \
     Traxex, \
-    Xin
+    Xin, \
+    Kerrigan
 from base_classes import AardvarkInstrument as Aardvark
 
