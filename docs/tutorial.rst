@@ -7,39 +7,39 @@ Basics
 
 #.  Start using ``microlab-instruments``
 
-.. code-block:: python
+    .. code-block:: python
 
-    import microlab_instruments as mi
+        import microlab_instruments as mi
 
 #.  Turn on the instrument nicknamed *Giratina*.
 #.  Initialize *Giratina* in the software environment
 
-.. code-block:: python
+    .. code-block:: python
 
-    giratina = mi.Giratina()
+        giratina = mi.Giratina()
 
 #.  Query *Giratina* for its identification string.
 
-.. code-block:: python
+    .. code-block:: python
 
-    giratina.write('*IDN?')
+        giratina.write('*IDN?')
 
 #.  Read *Giratina*'s ASCII response
 
-.. code-block:: python
+    .. code-block:: python
 
-    print giratina.read_ascii()
+        print giratina.read_ascii()
 
 #.  Putting them all together, you can write a script that asks *Giratina* for
     its identification string:
 
-.. code-block:: python
+    .. code-block:: python
 
-    import microlab_instruments as mi
+        import microlab_instruments as mi
 
-    giratina = mi.Giratina()
-    giratina.write('*IDN?')
-    print giratina.read_ascii()
+        giratina = mi.Giratina()
+        giratina.write('*IDN?')
+        print giratina.read_ascii()
 
 
 Types of Instruments
@@ -58,13 +58,12 @@ SCPI Instruments
 
 The most important commands for SCPI instruments are:
 
-    write(s)
-    read_ascii(bufsize)
-    read_binary()
-    read_ieee754()
+*  :py:meth:`~microlab_instruments.base_classes.TCPIPInstrument.write`
+*  :py:meth:`~microlab_instruments.base_classes.SCPIInstrument.read_ascii`
+*  :py:meth:`~microlab_instruments.base_classes.SCPIInstrument.read_binary`
+*  :py:meth:`~microlab_instruments.base_classes.SCPIInstrument.read_ieee754`
 
-where ``s`` is an SCPI command (see the instrument documentation) and
-``bufsize`` is the expected size in bytes of the ASCII response.  The ``read...`` commands return the following data types:
+The ``read...`` commands return the following data types:
 
 * ``read_ascii`` returns human-readable *str*.
 * ``read_binary`` technically returns *str* but it is not guaranteed to be human-readable.  Printing the output of this function will only result in gibberish in your terminal.
@@ -77,6 +76,9 @@ example:
 
 .. code-block:: python
 
+    import microlab_instruments as mi
+
+    giratina = mi.Giratina()
     giratina.write('*IDN?')
     giratina.write(':fetch:arr:volt?')
 
@@ -89,9 +91,9 @@ example:
 Convenience functions are provided such that ``write`` and ``read`` commands
 are done consecutively.
 
-    ask_ascii(s)
-    ask_binary(s)
-    ask_ieee754(s)
+*  :py:meth:`~microlab_instruments.base_classes.SCPIInstrument.ask_ascii`
+*  :py:meth:`~microlab_instruments.base_classes.SCPIInstrument.ask_binary`
+*  :py:meth:`~microlab_instruments.base_classes.SCPIInstrument.ask_ieee754`
 
 SCPI Instruments Example
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -115,7 +117,7 @@ saves it in ``screenshot.jpg`` in the current directory.
 For the following code, connect a 1kΩ resistor between the positive and
 negative probes.  We will sweep the voltage from 0 to 5 and measure the
 current.  Voltage sweep values and the corresponding current values are
-retrived.
+retrieved.
 
 .. code-block:: python
 
@@ -154,7 +156,7 @@ retrived.
 
 
 I2C Instruments
-===============
+---------------
 
 The I2C instruments are more specialized and thus we will discuss them here.
 The four I2C instruments are listed below, but you will actively use only the
@@ -166,12 +168,12 @@ first three.
 #.  ``Chen``, an I2C multiplexer used to coordinate the ``Traxex`` and ``Xin``
 
 These I2C instruments communicate via the Aardvark adapter, which must be
-initialized together with them.
+initialized first.
 
 I2C Instruments Example
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-``Kerrigan`` has only two commands, :meth:`FPGAInstrument.write` and :meth:`FPGAInstrument.read`
+``Kerrigan`` has only two commands, :py:meth:`~microlab_instruments.base_classes.FPGAInstrument.write` and :py:meth:`~microlab_instruments.base_classes.FPGAInstrument.read`
 
 .. code-block:: python
 
