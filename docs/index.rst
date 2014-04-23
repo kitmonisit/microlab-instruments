@@ -31,7 +31,7 @@ Contents
 
    readme
    installation
-   usage
+   tutorial
    microlab_instruments
    contributing
    authors
