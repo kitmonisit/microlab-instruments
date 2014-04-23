@@ -10,6 +10,7 @@ import aardvark_py as aapy
 import gpib
 import serial
 import socket
+import time
 from random import randint
 from array import array
 from struct import unpack
@@ -353,7 +354,6 @@ class TCPIPInstrument(SCPIInstrument):
 
 
 class AardvarkInstrument(object):
-
     #: These are the status codes used by :meth:`.i2c_write`\ ,
     #: :meth:`.i2c_read`\ , and :meth:`.i2c_write_read` when raising
     #: Exceptions.
@@ -392,7 +392,7 @@ class AardvarkInstrument(object):
         # SPI configuration
         aapy.aa_spi_bitrate(self.__device, 1000)
         aapy.aa_spi_configure(self.__device, aapy.AA_SPI_POL_RISING_FALLING, aapy.AA_SPI_PHASE_SAMPLE_SETUP, aapy.AA_SPI_BITORDER_MSB)
-        self.__spi_test()
+        #self.__spi_test()
 
     def __del__(self):
         aapy.aa_close(self.__device)
@@ -520,4 +520,112 @@ class SerialInstrument(object):
 
     def __del__(self):
         self.__serial.close()
+
+
+class I2CMuxInstrument(object):
+    """An abstraction layer for the I2C multiplexer chip.
+    """
+    def __init__(self, aardvark):
+        self.__aardvark = aardvark
+        self.__address = self.DATA['address']
+
+    def switch_to(self, mux_slave_address):
+        """Setup the multiplexer to relay I2C commands to the device having
+        ``mux_slave_address``
+
+        :param int slave_address:
+            The device to which the multiplexer will relay I2C commands.
+        """
+        self.__aardvark.i2c_write(self.__address, mux_slave_address)
+
+
+class TempSensorInstrument(object):
+    """An abstraction layer for the Sensirion STS21 temperature sensor with
+    an I2C communication interface.
+    """
+    def __init__(self, aardvark, mux):
+        """Initialize a Sensirion STS21 temperature sensor.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+
+        :param I2CMuxInstrument mux:
+            The I2C multiplexer through which I2C commands are relayed.
+        """
+        self.__aardvark = aardvark
+        self.__mux = mux
+        self.__address = self.DATA['address']
+        self.__mux_address = self.DATA['mux_address']
+
+    def read_temp(self):
+        """Read measured temperature data.
+
+        :returns out:
+            Temperature in degress Celsius
+        :rtype: float
+        """
+        # Configure multiplexer
+        self.__mux.switch_to(self.__mux_address)
+
+        # Instruct sensor to start measurement
+        BYTECODE = 0xF3
+        self.__aardvark.i2c_write(self.__address, BYTECODE)
+
+        # Wait 2 seconds
+        time.sleep(2)
+
+        # Read 3 bytes
+        BUFSIZE = 3
+        ret = self.__aardvark.i2c_read(self.__address, BUFSIZE)
+
+        # Status bits
+        status = bin(ret[1])[-2:]
+
+        # Checksum bits
+        checksum = '{0:02X}'.format(ret[2])
+
+        # Parse data
+        data = ((ret[0] << 8) + ((ret[1] >> 2) << 2))
+        temp = -46.85 + 175.72 * (float(data) / 2**16)
+
+        # TODO Include timestamp
+        return temp
+
+
+class FPGAInstrument(object):
+    """An abstraction layer for the FPGA.
+    """
+    def __init__(self, aardvark):
+        self.__aardvark = aardvark
+        self.__address = self.DATA['address']
+
+    def __write_command(self, register):
+        self.__aardvark.i2c_write(self.__address, register)
+
+    def __write_payload(self, payload):
+        self.__aardvark.i2c_write(self.__address, payload)
+
+    def __read(self):
+        bufsize = 1
+        return self.__aardvark.i2c_read(self.__address, bufsize)
+
+    def write(self, register, payload):
+        """Write a 1-byte-long ``payload`` to a ``register`` address.
+
+        :param int payload:
+            The data to write.  Limited to 1 byte long.
+        :param int register:
+            The register address to write to.  Limited to 1 byte long.
+        """
+        self.__write_command(register)
+        self.__write_payload(payload)
+
+    def read(self, register):
+        """Read the contents of ``register``.
+
+        :param int register:
+            The register address to read.  Limited to 1 byte long.
+        """
+        self.__write_command(register)
+        return self.__read()
 

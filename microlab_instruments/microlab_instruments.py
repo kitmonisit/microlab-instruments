@@ -4,24 +4,50 @@
 import base_classes as bc
 from struct import pack, unpack
 
+# FPGA Instruments
+KERRIGAN = {
+    'nickname'          : 'kerrigan',
+    'name'              : 'Xilinx Virtex 5',
+    'address'           : 0x55,
+    }
+
+# I2C Instruments
+CHEN     = {
+    'nickname'          : 'chen',
+    'name'              : 'I2C Mux Thing',
+    'address'           : 0x70,
+    }
+TRAXEX   = {
+    'nickname'          : 'traxex',
+    'name'              : 'Sensirion STS21 Temperature Sensor',
+    'address'           : 0x4A,
+    'mux_address'       : 0x04,
+    }
+XIN      = {
+    'nickname'          : 'xin',
+    'name'              : 'Sensirion STS21 Temperature Sensor',
+    'address'           : 0x4A,
+    'mux_address'       : 0x05,
+    }
+
 # GPIB Instruments
 ARCEUS   = {
-    'nickname'         : 'arceus',
-    'name'             : 'Agilent 8753ES S-Parameter Network Analyzer',
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'arceus',
+    'name'              : 'Agilent 8753ES S-Parameter Network Analyzer',
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 MELOETTA = {
-    'nickname'         : 'meloetta',
-    'name'             : 'Hewlett-Packard 6623A System DC Power Supply',
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'meloetta',
+    'name'              : 'Hewlett-Packard 6623A System DC Power Supply',
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 XERNEAS  = {
-    'nickname'         : 'xerneas',
-    'name'             : 'Hewlett-Packard 4156A Precision Semiconductor Parameter Analyzer',
-    'get_byte_order'   : '',
-    'byte_order_little': '',
+    'nickname'          : 'xerneas',
+    'name'              : 'Hewlett-Packard 4156A Precision Semiconductor Parameter Analyzer',
+    'get_byte_order'    : '',
+    'byte_order_little' : '',
     }
 
 # TCPIP Instruments
@@ -104,6 +130,79 @@ ZYGARDE  = {
     'get_byte_order'    : '',
     'byte_order_little' : '',
     }
+
+class Kerrigan(bc.FPGAInstrument):
+    def __init__(self, aardvark):
+        """Initialize the FPGA.
+
+        :param Aardvark aardvark:
+                An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            kerrigan = mi.Kerrigan(aa)
+        """
+        self.DATA = KERRIGAN
+        super(Kerrigan, self).__init__(aardvark=aardvark)
+
+
+class Chen(bc.I2CMuxInstrument):
+    def __init__(self, aardvark):
+        """Initialize the I2C multiplexer.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            chen = mi.Chen(aa)
+        """
+        self.DATA = CHEN
+        super(Chen, self).__init__(aardvark=aardvark)
+
+
+class Traxex(bc.TempSensorInstrument):
+    def __init__(self, aardvark, mux):
+        """Initialize a Sensirion STS21 temperature sensor.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            traxex = mi.Traxex(aa)
+            print traxex.read_temp()
+        """
+        self.DATA = TRAXEX
+        super(Traxex, self).__init__(aardvark=aardvark, mux=mux)
+
+
+class Xin(bc.TempSensorInstrument):
+    def __init__(self, aardvark, mux):
+        """Initialize a Sensirion STS21 temperature sensor.
+
+        :param Aardvark aardvark:
+            An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            xin = mi.Xin(aa)
+            print xin.read_temp()
+        """
+        self.DATA = XIN
+        super(Xin, self).__init__(aardvark=aardvark, mux=mux)
 
 
 class Arceus(bc.GPIBInstrument):
