@@ -4,6 +4,13 @@
 import base_classes as bc
 from struct import pack, unpack
 
+# FPGA Instruments
+KERRIGAN = {
+    'nickname'          : 'kerrigan',
+    'name'              : 'Xilinx Virtex 5',
+    'address'           : 0x55,
+    }
+
 # I2C Instruments
 CHEN     = {
     'nickname'          : 'chen',
@@ -123,6 +130,24 @@ ZYGARDE  = {
     'get_byte_order'    : '',
     'byte_order_little' : '',
     }
+
+class Kerrigan(bc.FPGAInstrument):
+    def __init__(self, aardvark):
+        """Initialize the FPGA.
+
+        :param Aardvark aardvark:
+                An Aardvark object through which I2C commands are relayed.
+
+        .. code-block:: python
+
+            import microlab_instruments as mi
+
+            aa = mi.Aardvark()
+            kerrigan = mi.Kerrigan(aa)
+        """
+        self.DATA = KERRIGAN
+        super(Kerrigan, self).__init__(aardvark=aardvark)
+
 
 class Chen(bc.I2CMuxInstrument):
     def __init__(self, aardvark):
