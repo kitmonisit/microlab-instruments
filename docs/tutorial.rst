@@ -152,3 +152,50 @@ retrived.
         c = '{0:>20.3e}'.format(o)
         print ''.join([a, b, c])
 
+
+I2C Instruments
+===============
+
+The I2C instruments are more specialized and thus we will discuss them here.
+The four I2C instruments are listed below, but you will actively use only the
+first three.
+
+#.  ``Kerrigan``, an FPGA
+#.  ``Traxex``, a temperature sensor
+#.  ``Xin``, another temperature sensor identical to ``Traxex``
+#.  ``Chen``, an I2C multiplexer used to coordinate the ``Traxex`` and ``Xin``
+
+These I2C instruments communicate via the Aardvark adapter, which must be
+initialized together with them.
+
+I2C Instruments Example
+^^^^^^^^^^^^^^^^^^^^^^^
+
+``Kerrigan`` has only two commands, :meth:`FPGAInstrument.write` and :meth:`FPGAInstrument.read`
+
+.. code-block:: python
+
+    import microlab_instruments as mi
+
+    aa = mi.Aardvark()
+    kerrigan = mi.Kerrigan()
+    REGISTER = 0x11
+    PAYLOAD = 0xAA
+    kerrigan.write(REGISTER, PAYLOAD)
+    print kerrigan.read(REGISTER)  # This should output 0xAA
+    print kerrigan.read(0x12)      # This should output 0x00
+
+
+To use ``Traxex`` and ``Xin``, we also need to initialize ``Chen``.  The temperature sensors have only one command, :meth:`.read_temp`\ , which returns the temperature in Celsius degrees.
+
+.. code-block:: python
+
+    import microlab_instruments as mi
+
+    aa = mi.Aardvark()
+    chen = mi.Chen(aa)
+    traxex = mi.Traxex(aa, chen)
+    xin = mi.Xin(aa, chen)
+
+    print traxex.read_temp()
+    print xin.read_temp()
