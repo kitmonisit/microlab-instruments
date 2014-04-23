@@ -575,3 +575,28 @@ class TempSensorInstrument(object):
         # TODO Include timestamp
         return temp
 
+
+class FPGAInstrument(object):
+    """An abstraction layer for the FPGA
+    """
+    def __init__(self, aardvark):
+        self.__aardvark = aardvark
+        self.__address = 0x55
+
+    def __write_command(self, bytecode):
+        self.__aardvark.i2c_write(self.__address, bytecode)
+
+    def __write_payload(self, payload):
+        self.__aardvark.i2c_write(self.__address, payload)
+
+    def __read(self):
+        return self.__aardvark.i2c_read(self.__address, 1)
+
+    def write(self, bytecode, payload):
+        self.__write_command(bytecode)
+        self.__write_payload(payload)
+
+    def read(self, register):
+        self.__write_command(register)
+        return self.__read()
+
