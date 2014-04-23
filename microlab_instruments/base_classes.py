@@ -197,7 +197,8 @@ class SCPIInstrument(object):
 
     def ask_ascii(self, scpi_string):
         """A convenience function for calling :meth:`.write` and
-        :meth:`.read_ascii` consecutively.
+        :meth:`.read_ascii` consecutively.  Up to 4096 bytes are read from
+        the ASCII response buffer.
 
         :param str scpi_string:
             A valid SCPI query command. See the instrument's SCPI command reference.
