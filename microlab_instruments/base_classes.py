@@ -209,7 +209,6 @@ class SCPIInstrument(object):
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
         self.write(scpi_string)
-        self.write('*OPC')
         return self.read_ascii()
 
     def ask_binary(self, scpi_string):
@@ -225,7 +224,6 @@ class SCPIInstrument(object):
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
         self.write(scpi_string)
-        self.write('*OPC')
         return self.read_binary()
 
     def ask_ieee754(self, scpi_string):
@@ -241,7 +239,6 @@ class SCPIInstrument(object):
         if scpi_string.strip()[-1] != '?':
             raise Exception, 'The scpi_string argument for ask_* functions must be a query, i.e. end with a ?'
         self.write(scpi_string)
-        self.write('*OPC')
         return self.read_ieee754()
 
 
