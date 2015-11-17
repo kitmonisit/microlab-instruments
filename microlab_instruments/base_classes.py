@@ -243,7 +243,7 @@ class SCPIInstrument(object):
 
 
 class GPIBInstrument(SCPIInstrument):
-    def __init__(self, nickname):
+    def __init__(self, nickname, reset=True):
         """Initialize a GPIB instrument
 
         :param str nickname:
@@ -251,7 +251,8 @@ class GPIBInstrument(SCPIInstrument):
             ``/etc/gpib.conf``.
         """
         self.__device = gpib.find(nickname)
-        self.reset()
+        if reset:
+            self.reset()
 
     def __del__(self):
         """Close the GPIB conection.
@@ -293,7 +294,7 @@ class GPIBInstrument(SCPIInstrument):
 
 
 class TCPIPInstrument(SCPIInstrument):
-    def __init__(self, socket_pair):
+    def __init__(self, socket_pair, reset=True):
         """Initialize TCP/IP instrument.
 
         :param tuple socket_pair:
@@ -302,7 +303,8 @@ class TCPIPInstrument(SCPIInstrument):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect(socket_pair)
         self._socket.settimeout(30)
-        self.reset()
+        if reset:
+            self.reset()
 
     def __del__(self):
         """Close the socket connection properly.
